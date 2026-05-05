@@ -2898,33 +2898,79 @@ function getPrevWorkout(exId) {
 
 // ─── Exercise Detail Modal ───
 // 種目カテゴリ別の写真URL（Unsplash高品質フリー写真）
-const EXERCISE_CATEGORY_PHOTOS = {
-  sh: 'https://images.unsplash.com/photo-1532029837206-abbe2b7620e3?w=600&h=280&fit=crop&auto=format',
-  ch: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&h=280&fit=crop&auto=format',
-  bk: 'https://images.unsplash.com/photo-1526506118085-60122a8f8e6a?w=600&h=280&fit=crop&auto=format',
-  lg: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=600&h=280&fit=crop&auto=format',
-  ar: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=600&h=280&fit=crop&auto=format',
-  ab: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&h=280&fit=crop&auto=format',
-  gl: 'https://images.unsplash.com/photo-1434682881908-b43d0467b798?w=600&h=280&fit=crop&auto=format',
-  cd: 'https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=600&h=280&fit=crop&auto=format',
-};
-// 種目個別の写真（カテゴリ写真を上書き）
+// ── Wikimedia Commons の種目別イラスト（各種目に正確に対応）──
+// upload.wikimedia.org は CORS許可・永続的なURL
+const W = 'https://upload.wikimedia.org/wikipedia/commons/';
+const SF = 'https://commons.wikimedia.org/wiki/Special:FilePath/';
+
 const EXERCISE_PHOTOS = {
-  ch1: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=600&h=280&fit=crop&auto=format',
-  ch2: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&h=280&fit=crop&auto=format',
-  bk1: 'https://images.unsplash.com/photo-1597452485677-d661670d9640?w=600&h=280&fit=crop&auto=format',
-  bk3: 'https://images.unsplash.com/photo-1566241142559-40e1dab266c6?w=600&h=280&fit=crop&auto=format',
-  lg1: 'https://images.unsplash.com/photo-1434608519344-49d77a699e1d?w=600&h=280&fit=crop&auto=format',
-  cd1: 'https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=600&h=280&fit=crop&auto=format',
+  // ── 肩 ──
+  sh1: W+'6/65/Seated_shoulder_press_machine_1.svg',
+  sh2: W+'a/aa/Lateral_dumbbell_raises_1.svg',
+  sh3: W+'a/aa/Lateral_dumbbell_raises_1.svg',
+  sh4: W+'1/1a/Cable-front-raises-1.png',
+  sh5: W+'b/b1/Seated_rear_lateral_cable_raise_1.svg',
+  sh6: W+'9/96/Arnold_press_1.svg',
+  sh7: W+'3/3d/Cable-upright-rows-1.png',
+  sh8: W+'6/65/Seated_shoulder_press_machine_1.svg',
+  // ── 胸 ──
+  ch1: W+'4/4e/Decline_chest_press_1.svg',
+  ch2: W+'e/e4/Incline_chest_press_1.svg',
+  ch3: W+'c/ce/Dumbbell_flys_1.svg',
+  ch4: W+'7/74/Bench_press_1.svg',
+  ch5: W+'e/e4/Incline_chest_press_1.svg',
+  ch6: W+'7/71/Incline_bench_press_1.svg',
+  ch7: W+'7/74/Bench_press_1.svg',
+  ch8: W+'c/ce/Dumbbell_flys_1.svg',
+  ch9: W+'1/1c/Cable_crossover_1.svg',
+  ch10:W+'7/77/Chest_dips_1.svg',
+  // ── 背中 ──
+  bk1: W+'2/2a/Diverging_Lat_Pulldown_Machine.jpg',
+  bk2: W+'2/2d/Cable-seated-rows-1.png',
+  bk3: W+'2/2d/Cable-seated-rows-1.png',
+  bk4: W+'2/2d/Cable-seated-rows-1.png',
+  bk5: SF+'Barbell_dead_lifts_1.svg',
+  bk6: SF+'Chin_ups_1.svg',
+  bk7: W+'a/ac/Hyperextensions_1.svg',
+  bk8: SF+'T_bar_rows_1.svg',
+  // ── 腕（力こぶ・二の腕）──
+  ar1: W+'b/ba/Preacher_curl_with_machine_1.svg',
+  ar2: W+'d/d3/Triceps_extensions_using_machine_1.svg',
+  ar3: W+'a/aa/Biceps_curl_with_dumbbell_1.svg',
+  ar4: W+'8/8c/Alternating_hammer_curl_with_dumbbell_1.svg',
+  ar5: W+'1/13/Triceps_pushdown_with_cable_1.svg',
+  // ── 腹・コア ──
+  ab1: W+'1/11/Crunches_1.svg',
+  ab2: W+'1/11/Crunches_1.svg',
+  ab3: W+'1/11/Crunches_1.svg',
+  ab4: W+'f/fb/Side_plank_1.svg',
+  ab5: W+'1/1b/Body_leg_lifts_1.svg',
+  // ── 脚 ──
+  lg1: W+'0/0c/Leg-press-1-1024x670.png',
+  lg2: W+'0/0c/Leg-press-1-1024x670.png',
+  lg3: W+'9/96/Lying_leg_curl_machine_1.svg',
+  lg4: W+'6/6d/Leg_extensions_1.svg',
+  lg5: W+'a/a1/Calves_press_on_leg_machine_1.svg',
+  lg6: W+'4/49/Speed_squats_with_barbell_1.svg',
+  lg7: W+'b/ba/Walking_lunges_1.svg',
+  // ── お尻・内もも ──
+  gl1: W+'a/ac/Hyperextensions_1.svg',
+  gl2: W+'4/44/Hip_adduction_1.svg',
+  gl3: SF+'Thigh_abductor_1.svg',
+  // ── 有酸素（Unsplash写真）──
+  ca1: 'https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=600&h=280&fit=crop&auto=format',
+  ca2: 'https://images.unsplash.com/photo-1558611848-73f7eb4001a1?w=600&h=280&fit=crop&auto=format',
+  ca3: 'https://images.unsplash.com/photo-1518611507436-f9221403cca2?w=600&h=280&fit=crop&auto=format',
+  ca4: 'https://images.unsplash.com/photo-1530143584546-02191bc84eb5?w=600&h=280&fit=crop&auto=format',
+  ca5: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&h=280&fit=crop&auto=format',
 };
 
 function showExerciseDetail(exId) {
   const info = EXERCISE_INFO[exId];
   if (!info) return;
 
-  // 写真URL（個別 → カテゴリ → なし）
-  const cat = exId.replace(/[0-9]/g,'');
-  const photoUrl = EXERCISE_PHOTOS[exId] || EXERCISE_CATEGORY_PHOTOS[cat] || '';
+  // 写真URL（種目別イラスト → なし）
+  const photoUrl = EXERCISE_PHOTOS[exId] || '';
 
   const primaryTags = (info.primary || []).map(m => `<span class="ex-muscle-tag primary">${m}</span>`).join('');
   const secondaryTags = (info.secondary || []).map(m => `<span class="ex-muscle-tag secondary">${m}</span>`).join('');
