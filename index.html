@@ -1020,29 +1020,74 @@ body{
   width:100%;max-width:540px;
   background:linear-gradient(160deg,#fff8fd,#f5eaff);
   border-radius:28px 28px 0 0;
-  padding:24px 20px 36px;
-  max-height:88vh;overflow-y:auto;
+  padding:0 0 36px;
+  max-height:92vh;overflow-y:auto;
   transform:translateY(40px);transition:transform 0.3s;
 }
 .ex-modal-overlay.open .ex-modal-sheet{transform:translateY(0);}
-.ex-modal-handle{width:40px;height:4px;background:var(--border);border-radius:4px;margin:0 auto 16px;}
+.ex-modal-handle{width:40px;height:4px;background:rgba(255,255,255,0.6);border-radius:4px;margin:0 auto;position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:2;}
+/* ── Hero Photo ── */
+.ex-photo-hero{
+  position:relative;width:100%;height:220px;
+  border-radius:28px 28px 0 0;overflow:hidden;
+  background:linear-gradient(135deg,#9333ea,#ec4899);
+  flex-shrink:0;
+}
+.ex-photo-hero img{
+  width:100%;height:100%;object-fit:cover;display:block;
+  transition:opacity 0.3s;
+}
+.ex-photo-gradient{
+  position:absolute;inset:0;
+  background:linear-gradient(to bottom,rgba(46,16,101,0.05) 30%,rgba(46,16,101,0.75) 100%);
+}
+.ex-photo-info{
+  position:absolute;bottom:14px;left:16px;right:16px;
+}
+.ex-photo-title{font-size:20px;font-weight:800;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.4);line-height:1.2;margin-bottom:4px;}
+.ex-photo-badges{display:flex;gap:6px;flex-wrap:wrap;}
+.ex-photo-badge{
+  background:rgba(255,255,255,0.22);
+  backdrop-filter:blur(6px);
+  border:1px solid rgba(255,255,255,0.35);
+  border-radius:20px;padding:3px 10px;
+  font-size:11px;font-weight:700;color:#fff;
+}
+.ex-photo-icon{font-size:56px;line-height:1;display:flex;align-items:center;justify-content:center;height:100%;padding-top:16px;}
+/* ── Body ── */
+.ex-modal-body{padding:20px 20px 0;}
 .ex-modal-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
 .ex-modal-icon{font-size:40px;line-height:1;}
 .ex-modal-title{font-size:18px;font-weight:700;color:var(--text);}
 .ex-modal-subtitle{font-size:12px;color:var(--text-dim);margin-top:2px;}
-.ex-section-label{font-size:11px;font-weight:700;color:var(--primary);letter-spacing:1px;text-transform:uppercase;margin:14px 0 8px;}
+.ex-section-label{font-size:11px;font-weight:700;color:var(--primary);letter-spacing:1px;text-transform:uppercase;margin:16px 0 10px;}
 .ex-muscle-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px;}
 .ex-muscle-tag{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;}
 .ex-muscle-tag.primary{background:linear-gradient(135deg,#ec4899,#9333ea);color:#fff;}
 .ex-muscle-tag.secondary{background:var(--primary-dim);color:var(--primary);}
-.ex-tips-list{display:flex;flex-direction:column;gap:8px;}
-.ex-tip-item{background:var(--card);border-radius:12px;padding:12px 14px;border-left:3px solid var(--primary);}
-.ex-tip-num{font-size:10px;font-weight:700;color:var(--primary);margin-bottom:3px;}
-.ex-tip-text{font-size:13px;line-height:1.6;color:var(--text);}
-.ex-warn-box{background:#fff0f5;border:1px solid #fda4af;border-radius:12px;padding:12px 14px;margin-top:8px;}
+/* ── HOW TO Steps ── */
+.ex-steps-grid{display:flex;flex-direction:column;gap:10px;}
+.ex-step-item{
+  display:flex;align-items:flex-start;gap:12px;
+  background:var(--card);border-radius:14px;padding:12px 14px;
+}
+.ex-step-num{
+  min-width:28px;height:28px;
+  background:linear-gradient(135deg,#ec4899,#9333ea);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:800;color:#fff;flex-shrink:0;
+}
+.ex-step-text{font-size:13px;line-height:1.6;color:var(--text);padding-top:3px;}
+/* ── Look box ── */
+.ex-look-box{background:var(--card2);border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.6;color:var(--text);border-left:3px solid rgba(147,51,234,0.4);}
+.ex-warn-box{background:#fff0f5;border:1px solid #fda4af;border-radius:12px;padding:12px 14px;margin-top:10px;display:flex;gap:10px;}
+.ex-warn-icon{font-size:20px;flex-shrink:0;}
+.ex-warn-inner{}
 .ex-warn-title{font-size:11px;font-weight:700;color:#e11d48;margin-bottom:4px;}
 .ex-warn-text{font-size:12px;color:#9f1239;line-height:1.5;}
-.ex-pro-box{background:linear-gradient(135deg,var(--gold-dim),rgba(180,83,9,0.05));border:1px solid var(--gold);border-radius:12px;padding:12px 14px;margin-top:8px;}
+.ex-pro-box{background:linear-gradient(135deg,var(--gold-dim),rgba(180,83,9,0.05));border:1px solid var(--gold);border-radius:12px;padding:12px 14px;margin-top:10px;display:flex;gap:10px;}
+.ex-pro-icon{font-size:20px;flex-shrink:0;}
+.ex-pro-inner{}
 .ex-pro-title{font-size:11px;font-weight:700;color:var(--gold);margin-bottom:4px;}
 .ex-pro-text{font-size:12px;color:var(--gold);line-height:1.5;}
 .ex-info-btn{background:none;border:none;font-size:14px;cursor:pointer;padding:0 4px;opacity:0.6;vertical-align:middle;transition:opacity 0.2s;}
@@ -1758,12 +1803,13 @@ body{
 <!-- ─── Exercise Detail Modal ─── -->
 <div class="ex-modal-overlay" id="ex-modal-overlay" onclick="closeExModal(event)">
   <div class="ex-modal-sheet" id="ex-modal-sheet">
-    <div class="ex-modal-handle"></div>
     <div id="ex-modal-content"></div>
-    <button onclick="document.getElementById('ex-modal-overlay').classList.remove('open')"
-      style="width:100%;margin-top:20px;padding:14px;background:var(--primary-dim);border:none;border-radius:14px;font-size:14px;font-weight:700;color:var(--primary);cursor:pointer;">
-      ✕ 閉じる
-    </button>
+    <div style="padding:0 20px;">
+      <button onclick="document.getElementById('ex-modal-overlay').classList.remove('open')"
+        style="width:100%;margin-top:16px;padding:14px;background:var(--primary-dim);border:none;border-radius:14px;font-size:14px;font-weight:700;color:var(--primary);cursor:pointer;">
+        ✕ 閉じる
+      </button>
+    </div>
   </div>
 </div>
 
@@ -2851,34 +2897,93 @@ function getPrevWorkout(exId) {
 }
 
 // ─── Exercise Detail Modal ───
+// 種目カテゴリ別の写真URL（Unsplash高品質フリー写真）
+const EXERCISE_CATEGORY_PHOTOS = {
+  sh: 'https://images.unsplash.com/photo-1532029837206-abbe2b7620e3?w=600&h=280&fit=crop&auto=format',
+  ch: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&h=280&fit=crop&auto=format',
+  bk: 'https://images.unsplash.com/photo-1526506118085-60122a8f8e6a?w=600&h=280&fit=crop&auto=format',
+  lg: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=600&h=280&fit=crop&auto=format',
+  ar: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=600&h=280&fit=crop&auto=format',
+  ab: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&h=280&fit=crop&auto=format',
+  gl: 'https://images.unsplash.com/photo-1434682881908-b43d0467b798?w=600&h=280&fit=crop&auto=format',
+  cd: 'https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=600&h=280&fit=crop&auto=format',
+};
+// 種目個別の写真（カテゴリ写真を上書き）
+const EXERCISE_PHOTOS = {
+  ch1: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=600&h=280&fit=crop&auto=format',
+  ch2: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&h=280&fit=crop&auto=format',
+  bk1: 'https://images.unsplash.com/photo-1597452485677-d661670d9640?w=600&h=280&fit=crop&auto=format',
+  bk3: 'https://images.unsplash.com/photo-1566241142559-40e1dab266c6?w=600&h=280&fit=crop&auto=format',
+  lg1: 'https://images.unsplash.com/photo-1434608519344-49d77a699e1d?w=600&h=280&fit=crop&auto=format',
+  cd1: 'https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=600&h=280&fit=crop&auto=format',
+};
+
 function showExerciseDetail(exId) {
   const info = EXERCISE_INFO[exId];
   if (!info) return;
+
+  // 写真URL（個別 → カテゴリ → なし）
+  const cat = exId.replace(/[0-9]/g,'');
+  const photoUrl = EXERCISE_PHOTOS[exId] || EXERCISE_CATEGORY_PHOTOS[cat] || '';
+
   const primaryTags = (info.primary || []).map(m => `<span class="ex-muscle-tag primary">${m}</span>`).join('');
   const secondaryTags = (info.secondary || []).map(m => `<span class="ex-muscle-tag secondary">${m}</span>`).join('');
-  const tipsHtml = (info.tips || []).map((t, i) =>
-    `<div class="ex-tip-item"><div class="ex-tip-num">POINT ${i+1}</div><div class="ex-tip-text">${t}</div></div>`
+
+  const stepsHtml = (info.tips || []).map((t, i) =>
+    `<div class="ex-step-item">
+      <div class="ex-step-num">${i+1}</div>
+      <div class="ex-step-text">${t}</div>
+    </div>`
   ).join('');
+
+  // Hero photo or emoji fallback
+  const heroHtml = photoUrl
+    ? `<img src="${photoUrl}" alt="${info.name}" onerror="this.style.display='none';this.parentElement.querySelector('.ex-photo-icon').style.display='flex'">
+       <div class="ex-photo-icon" style="display:none">${info.icon}</div>`
+    : `<div class="ex-photo-icon">${info.icon}</div>`;
+
   document.getElementById('ex-modal-content').innerHTML = `
-    <div class="ex-modal-header">
-      <div class="ex-modal-icon">${info.icon}</div>
-      <div>
-        <div class="ex-modal-title">${info.name}</div>
-        <div class="ex-modal-subtitle">難易度: ${info.level}</div>
+    <div class="ex-photo-hero">
+      <div class="ex-modal-handle"></div>
+      ${heroHtml}
+      <div class="ex-photo-gradient"></div>
+      <div class="ex-photo-info">
+        <div class="ex-photo-title">${info.name}</div>
+        <div class="ex-photo-badges">
+          <span class="ex-photo-badge">難易度: ${info.level}</span>
+          ${(info.primary||[]).slice(0,2).map(m=>`<span class="ex-photo-badge">${m}</span>`).join('')}
+        </div>
       </div>
     </div>
-    <div style="background:var(--card);border-radius:12px;padding:12px 14px;margin-bottom:4px;font-size:13px;line-height:1.6;color:var(--text);">
-      <div style="font-size:11px;font-weight:700;color:var(--primary);margin-bottom:6px;">🔍 マシン・器具の見た目</div>
-      ${info.look}
+    <div class="ex-modal-body">
+      <div class="ex-section-label">🎯 ターゲット筋肉</div>
+      <div class="ex-muscle-tags">${primaryTags}</div>
+      ${secondaryTags ? `<div style="margin:8px 0 6px;font-size:11px;color:var(--text-dim);">サポート筋</div><div class="ex-muscle-tags">${secondaryTags}</div>` : ''}
+
+      <div class="ex-section-label">🔍 マシン・器具の特徴</div>
+      <div class="ex-look-box">${info.look}</div>
+
+      <div class="ex-section-label">📋 HOW TO — 正しいフォーム</div>
+      <div class="ex-steps-grid">${stepsHtml}</div>
+
+      ${info.warn ? `
+      <div class="ex-warn-box">
+        <div class="ex-warn-icon">⚠️</div>
+        <div class="ex-warn-inner">
+          <div class="ex-warn-title">やってはいけないこと</div>
+          <div class="ex-warn-text">${info.warn}</div>
+        </div>
+      </div>` : ''}
+
+      ${info.pro ? `
+      <div class="ex-pro-box">
+        <div class="ex-pro-icon">⭐</div>
+        <div class="ex-pro-inner">
+          <div class="ex-pro-title">プロのコツ</div>
+          <div class="ex-pro-text">${info.pro}</div>
+        </div>
+      </div>` : ''}
     </div>
-    <div class="ex-section-label">🎯 ターゲット筋肉</div>
-    <div style="margin-bottom:4px;font-size:11px;color:var(--text-dim);">メイン</div>
-    <div class="ex-muscle-tags">${primaryTags}</div>
-    ${secondaryTags ? `<div style="margin:8px 0 4px;font-size:11px;color:var(--text-dim);">サポート</div><div class="ex-muscle-tags">${secondaryTags}</div>` : ''}
-    <div class="ex-section-label">📋 正しいフォームのコツ</div>
-    <div class="ex-tips-list">${tipsHtml}</div>
-    ${info.warn ? `<div class="ex-warn-box"><div class="ex-warn-title">⚠️ やってはいけないこと</div><div class="ex-warn-text">${info.warn}</div></div>` : ''}
-    ${info.pro ? `<div class="ex-pro-box"><div class="ex-pro-title">⭐ プロのコツ</div><div class="ex-pro-text">${info.pro}</div></div>` : ''}
   `;
   document.getElementById('ex-modal-overlay').classList.add('open');
 }
