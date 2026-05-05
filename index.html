@@ -845,8 +845,11 @@ body{
 .gym-cat-count{font-size:11px;font-weight:600;background:var(--primary);color:#fff;border-radius:20px;padding:2px 8px;}
 .gym-cat-body{display:none;padding:8px;}
 .gym-cat.open .gym-cat-body{display:block;}
-.gym-ex-row{display:flex;align-items:center;gap:8px;padding:7px 4px;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+.gym-ex-row-wrap{border-bottom:1px solid var(--border);}
+.gym-ex-row-wrap:last-child{border-bottom:none;}
+.gym-ex-row{display:flex;align-items:center;gap:8px;padding:7px 4px;flex-wrap:wrap;}
 .gym-ex-row:last-child{border-bottom:none;}
+.gym-prev-record{font-size:11px;color:var(--text-dim);padding:2px 4px 6px 29px;background:rgba(147,51,234,0.05);border-radius:0 0 8px 8px;}
 .gym-ex-check{width:17px;height:17px;cursor:pointer;accent-color:var(--primary);flex-shrink:0;}
 .gym-ex-name{flex:1;font-size:13px;color:var(--text);min-width:120px;line-height:1.3;}
 .gym-ex-name.done{color:var(--primary);opacity:0.6;text-decoration:line-through;}
@@ -2628,7 +2631,7 @@ const DATE_KEYED_FIELDS = ['habits','meals','bodyWeight','suppChecks','workouts'
 /**
  * ローカルとクラウドのstateをスマートマージする。
  * - 日付キーフィールドは両方の全日付を保持（どちらか一方にしかない日付を消さない）
- * - 同じ日付のデータはより新しい方を優先
+ * - 同じ日付が両方に存在する場合は「サブキーも含めて」マージ（片方のデータを上書き消去しない）
  * - 配列・スカラー値は _updatedAt が新しい方を優先
  */
 function mergeStates(local, cloud) {
@@ -2637,12 +2640,23 @@ function mergeStates(local, cloud) {
   const def = getDefaultState();
   // base: default → local → cloud の順で上書き（スカラー値はcloudを優先）
   const merged = { ...def, ...local, ...cloud };
-  // 日付キーフィールド：両方の全日付をマージ（古い記録を絶対に消さない）
+  // 日付キーフィールド：深いマージで全日付・全サブキーを保持
   for (const f of DATE_KEYED_FIELDS) {
     const l = local[f] || {};
     const c = cloud[f] || {};
-    // 全日付の和集合を作る。同じ日付はcloudを優先（より新しいデバイスからの可能性が高い）
-    merged[f] = { ...l, ...c };
+    const mergedField = {};
+    // 両方の日付の和集合
+    const allDates = new Set([...Object.keys(l), ...Object.keys(c)]);
+    for (const date of allDates) {
+      if (l[date] && c[date]) {
+        // 同じ日付が両方にある → サブキーも合体（どちらかにしかない項目を消さない）
+        mergedField[date] = { ...(l[date] || {}), ...(c[date] || {}) };
+      } else {
+        // 片方にしかない日付 → そのまま保持
+        mergedField[date] = l[date] || c[date];
+      }
+    }
+    merged[f] = mergedField;
   }
   // _updatedAt は新しい方を採用
   const lt = local._updatedAt || '';
@@ -2824,6 +2838,18 @@ function getTodayWorkout() {
   return state.workouts[td];
 }
 
+// 同じ種目の直近の記録を取得（今日より前で最も最近のもの）
+function getPrevWorkout(exId) {
+  const workouts = state.workouts || {};
+  const td = today();
+  const pastDates = Object.keys(workouts)
+    .filter(d => d < td && workouts[d][exId] && workouts[d][exId].checked)
+    .sort()
+    .reverse();
+  if (pastDates.length === 0) return null;
+  return { date: pastDates[0], data: workouts[pastDates[0]][exId] };
+}
+
 // ─── Exercise Detail Modal ───
 function showExerciseDetail(exId) {
   const info = EXERCISE_INFO[exId];
@@ -2957,20 +2983,27 @@ function renderGymTracker() {
               </div>
             </div>`;
           } else {
-            return `<div class="gym-ex-row">
-              <input type="checkbox" class="gym-ex-check" ${chk ? 'checked' : ''} onchange="toggleGymEx('${ex.id}')">
-              ${nameHtml}
-              <div class="gym-ex-inputs">
-                <input type="number" class="gym-ex-inp" value="${d.sets || ''}" min="0" placeholder="ST"
-                  onchange="updateGymField('${ex.id}','sets',this.value)" onclick="event.stopPropagation()">
-                <span class="gym-ex-lbl">セット</span>
-                <input type="number" class="gym-ex-inp" value="${d.reps || ''}" min="0" placeholder="回"
-                  onchange="updateGymField('${ex.id}','reps',this.value)" onclick="event.stopPropagation()">
-                <span class="gym-ex-lbl">回</span>
-                <input type="number" class="gym-ex-inp" value="${d.weight || ''}" min="0" placeholder="kg"
-                  onchange="updateGymField('${ex.id}','weight',this.value)" onclick="event.stopPropagation()">
-                <span class="gym-ex-lbl">kg</span>
+            const prev = getPrevWorkout(ex.id);
+            const prevHtml = prev
+              ? `<div class="gym-prev-record">📅 前回(${prev.date.slice(5).replace('-','/')}): ${prev.data.sets || '-'}set × ${prev.data.reps || '-'}回 × <strong>${prev.data.weight || '-'}kg</strong></div>`
+              : '';
+            return `<div class="gym-ex-row-wrap">
+              <div class="gym-ex-row">
+                <input type="checkbox" class="gym-ex-check" ${chk ? 'checked' : ''} onchange="toggleGymEx('${ex.id}')">
+                ${nameHtml}
+                <div class="gym-ex-inputs">
+                  <input type="number" class="gym-ex-inp" value="${d.sets || ''}" min="0" placeholder="ST"
+                    onchange="updateGymField('${ex.id}','sets',this.value)" onclick="event.stopPropagation()">
+                  <span class="gym-ex-lbl">セット</span>
+                  <input type="number" class="gym-ex-inp" value="${d.reps || ''}" min="0" placeholder="回"
+                    onchange="updateGymField('${ex.id}','reps',this.value)" onclick="event.stopPropagation()">
+                  <span class="gym-ex-lbl">回</span>
+                  <input type="number" class="gym-ex-inp" value="${d.weight || ''}" min="0" placeholder="kg"
+                    onchange="updateGymField('${ex.id}','weight',this.value)" onclick="event.stopPropagation()">
+                  <span class="gym-ex-lbl">kg</span>
+                </div>
               </div>
+              ${prevHtml}
             </div>`;
           }
         }).join('')}
