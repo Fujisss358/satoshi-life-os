@@ -2694,12 +2694,28 @@ function mergeStates(local, cloud) {
     // 両方の日付の和集合
     const allDates = new Set([...Object.keys(l), ...Object.keys(c)]);
     for (const date of allDates) {
-      if (l[date] && c[date]) {
-        // 同じ日付が両方にある → サブキーも合体（どちらかにしかない項目を消さない）
-        mergedField[date] = { ...(l[date] || {}), ...(c[date] || {}) };
+      const lv = l[date];
+      const cv = c[date];
+      if (lv && cv) {
+        if (Array.isArray(lv) && Array.isArray(cv)) {
+          // 配列（meals, todos）→ IDで重複排除しながら合体
+          const seen = new Set();
+          const arr = [];
+          for (const item of [...lv, ...cv]) {
+            const key = item && item.id ? item.id : JSON.stringify(item);
+            if (!seen.has(key)) { seen.add(key); arr.push(item); }
+          }
+          mergedField[date] = arr;
+        } else if (Array.isArray(lv) || Array.isArray(cv)) {
+          // 片方だけ配列 → 配列の方を優先
+          mergedField[date] = Array.isArray(lv) ? lv : cv;
+        } else {
+          // 両方オブジェクト（習慣チェック、筋トレ記録など）→ サブキーを合体
+          mergedField[date] = { ...lv, ...cv };
+        }
       } else {
         // 片方にしかない日付 → そのまま保持
-        mergedField[date] = l[date] || c[date];
+        mergedField[date] = lv || cv;
       }
     }
     merged[f] = mergedField;
