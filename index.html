@@ -3234,10 +3234,43 @@ function renderBodyWeightHistory() {
     </div>`;
 }
 
+// 配列であるべき値がオブジェクトに壊れていた場合に修復する
+function ensureArray(val) {
+  if (Array.isArray(val)) return val;
+  if (val && typeof val === 'object') {
+    // { 0: item, 1: item } のように数値キーで格納されていたら配列に戻す
+    const keys = Object.keys(val);
+    if (keys.length === 0) return [];
+    if (keys.every(k => !isNaN(parseInt(k, 10)))) {
+      return keys.sort((a,b)=>parseInt(a)-parseInt(b)).map(k => val[k]);
+    }
+    return Object.values(val);
+  }
+  return [];
+}
+
+// すべての日付キーフィールドの配列を修復（Supabaseに壊れたデータがある場合に対応）
+function repairArrayFields() {
+  const ARRAY_DATE_FIELDS = ['meals', 'todos'];
+  let repaired = false;
+  for (const f of ARRAY_DATE_FIELDS) {
+    if (!state[f]) { state[f] = {}; continue; }
+    for (const date of Object.keys(state[f])) {
+      if (!Array.isArray(state[f][date])) {
+        state[f][date] = ensureArray(state[f][date]);
+        repaired = true;
+      }
+    }
+  }
+  return repaired;
+}
+
 function getTodayMeals() {
   if (!state.meals) state.meals = {};
   const td = today();
   if (!state.meals[td]) state.meals[td] = [];
+  // 配列が壊れていたら修復
+  if (!Array.isArray(state.meals[td])) state.meals[td] = ensureArray(state.meals[td]);
   return state.meals[td];
 }
 
@@ -5525,6 +5558,8 @@ function getTodayTodos() {
   const td = today();
   if (!state.todos) state.todos = {};
   if (!state.todos[td]) state.todos[td] = [];
+  // 配列が壊れていたら修復
+  if (!Array.isArray(state.todos[td])) state.todos[td] = ensureArray(state.todos[td]);
   return state.todos[td];
 }
 
@@ -5534,7 +5569,7 @@ function carryoverTodos() {
   const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
   const yd = localDateStr(yesterday);
   if (!state.todos) state.todos = {};
-  const yTodos = (state.todos[yd] || []).filter(t => !t.done);
+  const yTodos = ensureArray(state.todos[yd]).filter(t => !t.done);
   if (yTodos.length > 0 && !state.todos[td]) {
     state.todos[td] = yTodos.map(t => ({...t, carriedOver: true}));
     saveState();
@@ -6309,6 +6344,14 @@ async function init() {
   } else {
     // 接続失敗：ローカルデータのままオフラインで動作
     setSyncStatus('offline');
+  }
+
+  // 配列フィールドの修復（古いバグで壊れたデータを自動修正）
+  const wasRepaired = repairArrayFields();
+  if (wasRepaired) {
+    console.log('[init] 壊れた配列データを修復しました。クラウドに再保存します。');
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+    setTimeout(() => saveToCloud(state), 1000); // 修復済みデータをクラウドに即保存
   }
 
   checkStreak();
