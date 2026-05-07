@@ -2686,17 +2686,18 @@ function mergeStates(local, cloud) {
   const def = getDefaultState();
   // base: default → local → cloud の順で上書き（スカラー値はcloudを優先）
   const merged = { ...def, ...local, ...cloud };
-  // 日付キーフィールド：深いマージで全日付・全サブキーを保持
+  // 日付キーフィールド：型を判定しながら安全にマージ
   for (const f of DATE_KEYED_FIELDS) {
     const l = local[f] || {};
     const c = cloud[f] || {};
     const mergedField = {};
-    // 両方の日付の和集合
     const allDates = new Set([...Object.keys(l), ...Object.keys(c)]);
     for (const date of allDates) {
       const lv = l[date];
       const cv = c[date];
-      if (lv && cv) {
+      const lvHas = lv !== undefined && lv !== null;
+      const cvHas = cv !== undefined && cv !== null;
+      if (lvHas && cvHas) {
         if (Array.isArray(lv) && Array.isArray(cv)) {
           // 配列（meals, todos）→ IDで重複排除しながら合体
           const seen = new Set();
@@ -2709,13 +2710,17 @@ function mergeStates(local, cloud) {
         } else if (Array.isArray(lv) || Array.isArray(cv)) {
           // 片方だけ配列 → 配列の方を優先
           mergedField[date] = Array.isArray(lv) ? lv : cv;
-        } else {
-          // 両方オブジェクト（習慣チェック、筋トレ記録など）→ サブキーを合体
+        } else if (typeof lv === 'object' && typeof cv === 'object') {
+          // 両方プレーンオブジェクト（habits, workouts, sleepLog等）→ サブキーを合体
           mergedField[date] = { ...lv, ...cv };
+        } else {
+          // スカラー値（bodyWeight=数値, reflections=文字列など）
+          // → 両方に値がある場合はローカルを優先（直近の入力を守る）
+          mergedField[date] = lvHas ? lv : cv;
         }
       } else {
         // 片方にしかない日付 → そのまま保持
-        mergedField[date] = lv || cv;
+        mergedField[date] = lvHas ? lv : cv;
       }
     }
     merged[f] = mergedField;
@@ -3251,8 +3256,10 @@ function ensureArray(val) {
 
 // すべての日付キーフィールドの配列を修復（Supabaseに壊れたデータがある場合に対応）
 function repairArrayFields() {
-  const ARRAY_DATE_FIELDS = ['meals', 'todos'];
   let repaired = false;
+
+  // 1. 配列フィールド（meals, todos）の修復
+  const ARRAY_DATE_FIELDS = ['meals', 'todos'];
   for (const f of ARRAY_DATE_FIELDS) {
     if (!state[f]) { state[f] = {}; continue; }
     for (const date of Object.keys(state[f])) {
@@ -3262,6 +3269,20 @@ function repairArrayFields() {
       }
     }
   }
+
+  // 2. bodyWeight の修復：{} に変換されたものは null にリセット（数値のみ許可）
+  if (state.bodyWeight) {
+    for (const date of Object.keys(state.bodyWeight)) {
+      const v = state.bodyWeight[date];
+      if (v !== null && v !== undefined && typeof v === 'object') {
+        // {} に壊れている → 削除（再入力してもらう）
+        console.warn(`[repair] bodyWeight[${date}] が壊れていたため削除:`, v);
+        delete state.bodyWeight[date];
+        repaired = true;
+      }
+    }
+  }
+
   return repaired;
 }
 
