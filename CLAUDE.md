@@ -100,6 +100,12 @@ USER_ID: satoshi_fujinuma
 - `CATEGORY_GUIDES` オブジェクトでカテゴリID→ガイド画像URLをマッピング
 - ガイド画像は `https://fujisss358.github.io/satoshi-life-os/guides/` 配下
 
+### 🔄 PWA自動アップデート（2026-05-13 実装済み）
+- `deploy.sh` が実行されるたびに `sw.js` のバージョン文字列を**タイムスタンプで自動書き換え**
+- ブラウザが新しいSWを検知 → `skipWaiting()` → `controllerchange` → **ページ自動リロード**
+- 30分ごとにSWのアップデートをバックグラウンドでチェック
+- **デプロイ = スマホも自動で最新版に切り替わる**
+
 ### 📋 未対応・検討中
 - [ ] 習慣の詳細統計（週別・月別グラフ）
 - [ ] 筋トレのボリューム推移グラフ
