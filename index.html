@@ -972,6 +972,29 @@ body{
 .fx-bias-btn.bull{background:rgba(21,128,61,0.15);border-color:var(--green);color:var(--green);}
 .fx-bias-btn.bear{background:rgba(220,38,38,0.12);border-color:var(--red);color:var(--red);}
 .fx-bias-btn.neut{background:rgba(180,83,9,0.1);border-color:var(--gold);color:var(--gold);}
+.market-hero{background:linear-gradient(135deg,rgba(21,128,61,0.08),rgba(147,51,234,0.08));border:1px solid rgba(21,128,61,0.2);border-radius:var(--radius);padding:18px;margin-bottom:16px;}
+.market-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px;}
+.market-title{font-size:17px;font-weight:800;color:var(--text);}
+.market-sub{font-size:12px;color:var(--text-dim);line-height:1.6;margin-top:3px;}
+.market-decision{border-radius:18px;padding:8px 12px;font-size:12px;font-weight:800;white-space:nowrap;text-align:center;}
+.market-decision.go{background:rgba(21,128,61,0.14);color:var(--green);border:1px solid rgba(21,128,61,0.35);}
+.market-decision.wait{background:rgba(180,83,9,0.12);color:var(--gold);border:1px solid rgba(180,83,9,0.3);}
+.market-decision.stop{background:rgba(220,38,38,0.1);color:var(--red);border:1px solid rgba(220,38,38,0.28);}
+.market-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(max-width:640px){.market-grid{grid-template-columns:1fr;}.market-head{flex-direction:column;}.market-decision{width:100%;}}
+.market-panel{background:rgba(255,255,255,0.68);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;}
+.market-panel-title{font-size:11px;font-weight:800;color:var(--text-dim);letter-spacing:.6px;text-transform:uppercase;margin-bottom:10px;}
+.market-schedule{display:grid;grid-template-columns:44px 1fr;gap:8px;padding:7px 0;border-bottom:1px solid rgba(192,132,252,0.16);}
+.market-schedule:last-child{border-bottom:none;}
+.market-time{font-size:11px;font-weight:800;color:var(--primary);}
+.market-task{font-size:12px;color:var(--text);line-height:1.5;}
+.market-check{display:flex;align-items:flex-start;gap:9px;padding:8px 0;border-bottom:1px solid rgba(192,132,252,0.14);}
+.market-check:last-child{border-bottom:none;}
+.market-check input{width:17px;height:17px;margin-top:1px;accent-color:var(--primary);flex-shrink:0;}
+.market-check span{font-size:12px;line-height:1.5;color:var(--text);}
+.market-blocker span{color:var(--red);}
+.market-metric-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+.market-note{font-size:11px;color:var(--text-dim);line-height:1.6;margin-top:8px;}
 .fx-eco-row{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;margin-bottom:4px;background:var(--card2);border:1px solid var(--border);}
 .fx-eco-impact-high{color:#dc2626;font-size:10px;font-weight:800;min-width:16px;}
 .fx-eco-impact-mid{color:#b45309;font-size:10px;font-weight:800;min-width:16px;}
@@ -1263,6 +1286,60 @@ body{
 <div id="page-money" class="page">
   <div class="section-heading">稼ぐ力ダッシュボード</div>
   <div class="section-sub">収入・スキル・アイデアを一元管理</div>
+  <div class="market-hero" id="market-mode-card">
+    <div class="market-head">
+      <div>
+        <div class="market-title">Market Mode</div>
+        <div class="market-sub">ビジネスでキャッシュフローを作り、投資は資産防衛・増幅に使う。FXは予測ゲームではなく、ルールを守るシステムとして扱う。</div>
+      </div>
+      <div class="market-decision wait" id="market-decision">判定中</div>
+    </div>
+
+    <div class="market-grid">
+      <div class="market-panel">
+        <div class="market-panel-title">朝の投資授業</div>
+        <div class="market-schedule"><div class="market-time">7:00</div><div class="market-task">世界ニュース・金利・要人発言</div></div>
+        <div class="market-schedule"><div class="market-time">7:15</div><div class="market-task">経済指標・イベントリスク確認</div></div>
+        <div class="market-schedule"><div class="market-time">7:30</div><div class="market-task">AI要約と相場環境の整理</div></div>
+        <div class="market-schedule"><div class="market-time">8:00</div><div class="market-task">シナリオ構築・見送り条件確認</div></div>
+        <div class="market-schedule"><div class="market-time">8:30</div><div class="market-task">終了。ダラダラ監視しない</div></div>
+      </div>
+
+      <div class="market-panel">
+        <div class="market-panel-title">今日のゲート</div>
+        <label class="market-check"><input type="checkbox" data-market-check="news" onchange="saveMarketMode()"><span>ファンダ・ニュースを確認した</span></label>
+        <label class="market-check"><input type="checkbox" data-market-check="events" onchange="saveMarketMode()"><span>指標時刻と禁止時間を確認した</span></label>
+        <label class="market-check"><input type="checkbox" data-market-check="technical" onchange="saveMarketMode()"><span>MA・RSI・MACD・ATR・レジサポを確認した</span></label>
+        <label class="market-check"><input type="checkbox" data-market-check="scenario" onchange="saveMarketMode()"><span>エントリー前に損切り・利確・撤退条件を書いた</span></label>
+        <label class="market-check"><input type="checkbox" data-market-check="rule" onchange="saveMarketMode()"><span>期待値がないなら見送ると決めた</span></label>
+      </div>
+    </div>
+
+    <div class="market-grid" style="margin-top:10px;">
+      <div class="market-panel">
+        <div class="market-panel-title">期待値ルール</div>
+        <div class="market-metric-row">
+          <div><label class="form-label">市場温度</label><select id="market-temp" class="form-select" onchange="saveMarketMode()"><option value="">選択</option><option value="trend">トレンド</option><option value="range">レンジ</option><option value="event">指標前後</option><option value="unclear">不明</option></select></div>
+          <div><label class="form-label">監視時間</label><select id="market-session" class="form-select" onchange="saveMarketMode()"><option value="morning">朝だけ</option><option value="london">ロンドン</option><option value="ny">NY</option><option value="none">今日は見ない</option></select></div>
+        </div>
+        <div class="market-metric-row">
+          <div><label class="form-label">RR</label><input id="market-rr" type="number" min="0" step="0.1" class="form-input" placeholder="2.0" onchange="saveMarketMode()"></div>
+          <div><label class="form-label">最大回数</label><input id="market-max-trades" type="number" min="0" step="1" class="form-input" placeholder="1" onchange="saveMarketMode()"></div>
+        </div>
+        <textarea id="market-scenario" class="habit-note" rows="3" placeholder="今日のシナリオ、条件一致、損切り固定、ロット固定..." onchange="saveMarketMode()"></textarea>
+      </div>
+
+      <div class="market-panel">
+        <div class="market-panel-title">トレード禁止判定</div>
+        <label class="market-check market-blocker"><input type="checkbox" data-market-blocker="highEvent" onchange="saveMarketMode()"><span>重要指標・要人発言の前後</span></label>
+        <label class="market-check market-blocker"><input type="checkbox" data-market-blocker="unclear" onchange="saveMarketMode()"><span>相場環境が不明</span></label>
+        <label class="market-check market-blocker"><input type="checkbox" data-market-blocker="lowVol" onchange="saveMarketMode()"><span>ボラが低く期待値が薄い</span></label>
+        <label class="market-check market-blocker"><input type="checkbox" data-market-blocker="emotion" onchange="saveMarketMode()"><span>暇・焦り・取り返したい気持ちがある</span></label>
+        <div style="margin-top:8px;"><label class="form-label">感情ログ</label><select id="market-emotion" class="form-select" onchange="saveMarketMode()"><option value="calm">冷静</option><option value="greedy">欲が強い</option><option value="fearful">怖い</option><option value="tired">疲れている</option></select></div>
+        <div class="market-note" id="market-feedback">ルール外なら今日は勝ち。ノートレードも立派な実行です。</div>
+      </div>
+    </div>
+  </div>
   <!-- FX分析タブナビ -->
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px;">
     <button onclick="switchFxTab('eco');document.getElementById('fx-dashboard-card').scrollIntoView({behavior:'smooth',block:'start'});"
@@ -3987,7 +4064,107 @@ function getTodayFx() {
   if (!state.fxAnalysis) state.fxAnalysis = {};
   const td = today();
   if (!state.fxAnalysis[td]) state.fxAnalysis[td] = { biases:{}, risk:'', funda:'', tech:'', tradeResult:'none', tradePips:0, analysts:[{},{},{}], ecoEvents:[] };
+  ensureMarketMode(state.fxAnalysis[td]);
   return state.fxAnalysis[td];
+}
+
+function ensureMarketMode(fx) {
+  if (!fx.marketMode) {
+    fx.marketMode = {
+      checks: {},
+      blockers: {},
+      temp: '',
+      session: 'morning',
+      rr: '',
+      maxTrades: 1,
+      scenario: '',
+      emotion: 'calm',
+    };
+  }
+  fx.marketMode.checks = fx.marketMode.checks || {};
+  fx.marketMode.blockers = fx.marketMode.blockers || {};
+  return fx.marketMode;
+}
+
+function getMarketDecision(mm) {
+  const blockers = Object.values(mm.blockers || {}).some(Boolean);
+  const checks = ['news','events','technical','scenario','rule'];
+  const done = checks.filter(k => mm.checks?.[k]).length;
+  const rr = parseFloat(mm.rr) || 0;
+  const emotionBad = ['greedy','fearful','tired'].includes(mm.emotion);
+  const tempBad = ['event','unclear'].includes(mm.temp);
+
+  if (blockers || emotionBad || tempBad || mm.session === 'none') {
+    return {
+      status: 'stop',
+      label: '今日は原則トレード禁止',
+      feedback: '大負けを防げた日は勝ちです。相場ではなく、ルールを守る日にしましょう。',
+    };
+  }
+  if (done < checks.length || rr < 1.5 || !mm.scenario?.trim()) {
+    return {
+      status: 'wait',
+      label: 'まだ見送り',
+      feedback: `準備 ${done}/${checks.length}、RR ${rr || '-'}。条件がそろうまで待つのが仕事です。`,
+    };
+  }
+  return {
+    status: 'go',
+    label: '条件一致時のみ実行可',
+    feedback: 'エントリーしてよいのは、書いた条件に完全一致した瞬間だけです。最大回数を超えたら終了。',
+  };
+}
+
+function renderMarketMode() {
+  const card = document.getElementById('market-mode-card');
+  if (!card) return;
+  const mm = ensureMarketMode(getTodayFx());
+
+  card.querySelectorAll('[data-market-check]').forEach(el => {
+    el.checked = !!mm.checks[el.dataset.marketCheck];
+  });
+  card.querySelectorAll('[data-market-blocker]').forEach(el => {
+    el.checked = !!mm.blockers[el.dataset.marketBlocker];
+  });
+  const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val ?? ''; };
+  setVal('market-temp', mm.temp);
+  setVal('market-session', mm.session || 'morning');
+  setVal('market-rr', mm.rr);
+  setVal('market-max-trades', mm.maxTrades ?? 1);
+  setVal('market-scenario', mm.scenario);
+  setVal('market-emotion', mm.emotion || 'calm');
+  updateMarketDecision();
+}
+
+function saveMarketMode() {
+  const fx = getTodayFx();
+  const mm = ensureMarketMode(fx);
+  document.querySelectorAll('[data-market-check]').forEach(el => {
+    mm.checks[el.dataset.marketCheck] = el.checked;
+  });
+  document.querySelectorAll('[data-market-blocker]').forEach(el => {
+    mm.blockers[el.dataset.marketBlocker] = el.checked;
+  });
+  mm.temp = document.getElementById('market-temp')?.value || '';
+  mm.session = document.getElementById('market-session')?.value || 'morning';
+  mm.rr = document.getElementById('market-rr')?.value || '';
+  mm.maxTrades = parseInt(document.getElementById('market-max-trades')?.value || '1', 10);
+  mm.scenario = document.getElementById('market-scenario')?.value || '';
+  mm.emotion = document.getElementById('market-emotion')?.value || 'calm';
+  saveState();
+  updateMarketDecision();
+}
+
+function updateMarketDecision() {
+  const mm = ensureMarketMode(getTodayFx());
+  const d = getMarketDecision(mm);
+  const badge = document.getElementById('market-decision');
+  const feedback = document.getElementById('market-feedback');
+  if (badge) {
+    badge.className = `market-decision ${d.status}`;
+    badge.textContent = d.label;
+  }
+  if (feedback) feedback.textContent = d.feedback;
 }
 
 function saveFxAnalysis() {
@@ -4302,6 +4479,7 @@ function saveTrade() {
 }
 
 function initFxDashboard() {
+  renderMarketMode();
   renderFxBiasGrid();
   renderEcoCalendar();
   refreshFxRates();
@@ -5057,6 +5235,7 @@ function renderMoneyPage() {
   const month = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
   const monthlyEntries = state.income.filter(e => e.date.startsWith(month));
 
+  renderMarketMode();
   document.getElementById('monthly-total').textContent = `¥${monthly.toLocaleString()}`;
   document.getElementById('monthly-sub').textContent = `今月の記録: ${monthlyEntries.length}件`;
 
