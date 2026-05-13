@@ -2885,6 +2885,67 @@ function mergeStates(local, cloud) {
   const lt = local._updatedAt || '';
   const ct = cloud._updatedAt || '';
   merged._updatedAt = lt > ct ? lt : ct;
+
+  // ─── 蓄積系フィールド：常に「より進んでいる方」を守る ───────────
+  // user オブジェクト：streak / xp / totalXp / level は必ず大きい方を保持
+  const lu = local.user || {};
+  const cu = cloud.user || {};
+  const maxTotalXp = Math.max(lu.totalXp || 0, cu.totalXp || 0);
+  // totalXp から level / xp を再計算（同期ズレによる不整合を防ぐ）
+  let reLevel = 1, reXp = maxTotalXp;
+  while (reXp >= xpForLevel(reLevel)) { reXp -= xpForLevel(reLevel); reLevel++; }
+  merged.user = {
+    ...lu, ...cu,
+    name: lu.name || cu.name || 'サトシ',
+    streak: Math.max(lu.streak || 0, cu.streak || 0),
+    totalXp: maxTotalXp,
+    xp: reXp,
+    level: reLevel,
+    // lastCheckDate はより新しい方
+    lastCheckDate: (lu.lastCheckDate || '') > (cu.lastCheckDate || '')
+      ? lu.lastCheckDate : cu.lastCheckDate,
+  };
+
+  // stats：各カウンタは大きい方を使う（実績は絶対に消えない）
+  const ls = local.stats || {};
+  const cs = cloud.stats || {};
+  merged.stats = {
+    totalHabitDone:    Math.max(ls.totalHabitDone || 0,    cs.totalHabitDone || 0),
+    perfectDays:       Math.max(ls.perfectDays || 0,        cs.perfectDays || 0),
+    totalIncomeLogged: Math.max(ls.totalIncomeLogged || 0,  cs.totalIncomeLogged || 0),
+  };
+
+  // unlockedBadges：両方のバッジを合体（獲得済みバッジは消えない）
+  const lb = local.unlockedBadges || [];
+  const cb = cloud.unlockedBadges || [];
+  merged.unlockedBadges = [...new Set([...lb, ...cb])];
+
+  // skills：IDでマッチさせ progress は大きい方を採用
+  const lsk = local.skills || [];
+  const csk = cloud.skills || [];
+  const skillMap = {};
+  for (const sk of [...lsk, ...csk]) {
+    if (!sk || !sk.id) continue;
+    const existing = skillMap[sk.id];
+    if (!existing || (sk.progress || 0) > (existing.progress || 0)) {
+      skillMap[sk.id] = { ...(existing || {}), ...sk };
+    }
+  }
+  merged.skills = Object.values(skillMap).length > 0
+    ? Object.values(skillMap)
+    : (lsk.length ? lsk : csk);
+
+  // income：IDで重複排除しつつ両方を保持
+  const li = local.income || [];
+  const ci = cloud.income || [];
+  const incomeMap = {};
+  for (const item of [...li, ...ci]) {
+    if (!item) continue;
+    const key = item.id || JSON.stringify(item);
+    if (!incomeMap[key]) incomeMap[key] = item;
+  }
+  merged.income = Object.values(incomeMap);
+
   // mariaPhotos: 両方を合体してサイズ制限・重複排除
   const allPhotos = [...(local.mariaPhotos || []), ...(cloud.mariaPhotos || [])];
   merged.mariaPhotos = allPhotos.filter(
