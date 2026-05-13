@@ -6806,12 +6806,41 @@ init();
   </div>
 </div>
 <script>
-// Service Worker 登録（PWA用）
+// ── Service Worker 登録 + 自動アップデート検知 ──────────────────
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
-      .then(r => console.log('[SW] registered:', r.scope))
-      .catch(e => console.warn('[SW] failed:', e));
+    navigator.serviceWorker.register('./sw.js').then(reg => {
+      console.log('[SW] registered:', reg.scope);
+
+      // ① 新しい SW がインストール待ちになったら即 skipWaiting を要求
+      reg.addEventListener('updatefound', () => {
+        const newSW = reg.installing;
+        if (!newSW) return;
+        newSW.addEventListener('statechange', () => {
+          if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+            // 古い SW が動いている状態で新 SW がインストール完了 → 即切り替え
+            newSW.postMessage({ type: 'SKIP_WAITING' });
+          }
+        });
+      });
+
+    }).catch(e => console.warn('[SW] failed:', e));
+
+    // ② SW が切り替わった（controllerchange）瞬間にページをリロード
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (refreshing) return;
+      refreshing = true;
+      console.log('[SW] 新バージョン検知 → リロード');
+      window.location.reload();
+    });
+
+    // ③ 定期チェック：30分ごとにSWのアップデートを確認
+    setInterval(() => {
+      navigator.serviceWorker.getRegistration().then(reg => {
+        if (reg) reg.update().catch(() => {});
+      });
+    }, 30 * 60 * 1000);
   });
 }
 </script>

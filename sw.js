@@ -1,22 +1,23 @@
 // SATOSHI LIFE OS Service Worker
-// Version: v20260506-3
-const CACHE_NAME = "satoshi-life-os-v20260506-3";
+// Version: v20260513-2243  ← deploy.sh が自動書き換え
+const SW_VERSION = "v20260513-2243";
+const CACHE_NAME = "satoshi-life-os-" + SW_VERSION;
 const OFFLINE_URL = "./";
 
 // キャッシュするアセット（初回インストール時）
-const PRECACHE = ["./"]; 
+const PRECACHE = ["./"];
 
 self.addEventListener("install", (event) => {
-  console.log("[SW] Installing version: v20260506-3");
+  console.log("[SW] Installing version:", SW_VERSION);
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE))
   );
-  // 新しいSWをすぐに有効化
+  // 新しいSWをすぐに有効化（待機しない）
   self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
-  console.log("[SW] Activating version: v20260506-3");
+  console.log("[SW] Activating version:", SW_VERSION);
   event.waitUntil(
     caches.keys().then((keys) =>
       Promise.all(
@@ -27,20 +28,29 @@ self.addEventListener("activate", (event) => {
             return caches.delete(key);
           })
       )
-    )
+    ).then(() => {
+      // すぐに全クライアントを制御下に置く → controllerchange が発火してページが自動リロード
+      return self.clients.claim();
+    })
   );
-  // すぐに全クライアントを制御下に置く
-  self.clients.claim();
+});
+
+// アプリからの SKIP_WAITING メッセージを受け取って即時切り替え
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
 });
 
 self.addEventListener("fetch", (event) => {
   const url = event.request.url;
 
-  // Supabase・外部API・Unsplash はキャッシュしない（常にネットワーク）
+  // Supabase・外部API・画像CDNはキャッシュしない（常にネットワーク）
   if (
     url.includes("supabase.co") ||
     url.includes("anthropic.com") ||
     url.includes("unsplash.com") ||
+    url.includes("wikimedia.org") ||
     url.includes("googleapis.com") ||
     url.includes("jsdelivr.net") ||
     url.includes("fonts.g") ||
@@ -69,7 +79,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // その他：キャッシュ優先
+  // その他：キャッシュ優先（ガイド画像など）
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) return cached;
