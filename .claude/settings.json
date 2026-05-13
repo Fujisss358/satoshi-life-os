@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(*)",
+      "Read(*)",
+      "Edit(*)",
+      "Write(*)",
+      "WebFetch(*)",
+      "WebSearch(*)"
+    ],
+    "deny": []
+  },
+  "env": {
+    "LIFE_OS_DIR": "/Users/satoshifujinuma/FX攻略テスト/life-os"
+  }
+}
