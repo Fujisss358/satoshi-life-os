@@ -843,6 +843,12 @@ body{
 .gym-cat-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;cursor:pointer;font-weight:700;font-size:13px;background:var(--primary-dim);color:var(--primary);user-select:none;}
 .gym-cat-header:hover{background:rgba(147,51,234,0.2);}
 .gym-cat-count{font-size:11px;font-weight:600;background:var(--primary);color:#fff;border-radius:20px;padding:2px 8px;}
+.gym-guide-btn{font-size:11px;font-weight:600;background:rgba(147,51,234,0.15);color:var(--primary);border:1px solid var(--primary);border-radius:14px;padding:3px 9px;cursor:pointer;white-space:nowrap;margin-right:6px;transition:background 0.15s;}
+.gym-guide-btn:hover{background:var(--primary);color:#fff;}
+/* ガイド画像ライトボックス */
+#guide-overlay{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;flex-direction:column;}
+#guide-overlay img{max-width:96vw;max-height:90vh;border-radius:10px;object-fit:contain;}
+#guide-overlay-close{margin-top:14px;background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.4);border-radius:24px;padding:8px 28px;font-size:15px;cursor:pointer;}
 .gym-cat-body{display:none;padding:8px;}
 .gym-cat.open .gym-cat-body{display:block;}
 .gym-ex-row-wrap{border-bottom:1px solid var(--border);}
@@ -1131,6 +1137,12 @@ body{
 </style>
 </head>
 <body>
+
+<!-- ガイド画像ライトボックス -->
+<div id="guide-overlay" onclick="closeCategoryGuide()">
+  <img id="guide-overlay-img" src="" alt="トレーニングガイド" onclick="event.stopPropagation()">
+  <button id="guide-overlay-close" onclick="closeCategoryGuide()">✕ 閉じる</button>
+</div>
 
 <!-- ─── Header ─── -->
 <div id="header">
@@ -2320,6 +2332,9 @@ const GYM_EXERCISES = [
     { id:'ar3', name:'ダンベルカール', kcalPerSet:5 },
     { id:'ar4', name:'ハンマーカール（ダンベル）', kcalPerSet:5 },
     { id:'ar5', name:'トライセップスプッシュダウン（ケーブル）', kcalPerSet:5 },
+    { id:'ar6', name:'ダンベルキックバック', kcalPerSet:4 },
+    { id:'ar7', name:'オーバーヘッドエクステンション', kcalPerSet:5 },
+    { id:'ar8', name:'チェアディップス（マシン/自重）', kcalPerSet:6 },
   ]},
   { id:'abs', icon:'🔥', name:'腹・コア', exercises:[
     { id:'ab1', name:'アブドミナルクランチ（マシン）', kcalPerSet:5 },
@@ -2616,6 +2631,70 @@ const EXERCISE_INFO = {
     tips:['背筋を伸ばし、前のハンドルには軽く手を添える程度にする','ステップを踏み外さないよう足全体でしっかり踏む','ペースはゆっくりから始め、リズムを作る','重心を前に保ち、後ろに倒れない'],
     warn:'ハンドルに体重をかけすぎると意味がない。あくまで「バランス補助」程度に。',
     pro:'消費カロリーが高く、お尻の筋肉に特によく効く。30分続けられれば大きな有酸素効果。'
+  },
+  ar1:{
+    icon:'💪',name:'バイセップスカール（マシン）',level:'初〜中級',
+    look:'シートに座り、パッドに肘を固定してカールするマシン。「プリーチャーカール」とも呼ばれる。',
+    primary:['上腕二頭筋（全体）'],secondary:['前腕'],
+    tips:['肘をパッドにしっかり固定する','ゆっくり（2〜3秒）下ろすと効果UP','収縮させたまま1秒キープ','肩は動かさず上腕二頭筋だけで持ち上げる'],
+    warn:'肘が浮くと肩に負担がかかる。パッドに密着させよう。',
+    pro:'マシンなので軌道が固定されており、初心者でも正しいフォームで鍛えやすい。'
+  },
+  ar2:{
+    icon:'💪',name:'トライセップスプレス（マシン）',level:'初〜中級',
+    look:'シートに座り、肘を曲げた状態からバーを前方に押し伸ばすマシン。上腕三頭筋を効率よく鍛えられる。',
+    primary:['上腕三頭筋（全体）'],secondary:['肩（前部）'],
+    tips:['背中をシートにつけて体を安定させる','肘を伸ばし切る直前で止める','ゆっくり（2〜3秒）戻してストレッチを感じる','肘の位置を固定して動かさない'],
+    warn:'重すぎると肩に負担がかかる。まず軽めで正しい動きを習得しよう。',
+    pro:'マシンなので軌道が安定。三頭筋の「長頭」までしっかり刺激できる。'
+  },
+  ar3:{
+    icon:'💪',name:'ダンベルカール',level:'初〜中級',
+    look:'立った状態で両手（または片手ずつ）にダンベルを持ち、肘を曲げて持ち上げる基本種目。',
+    primary:['上腕二頭筋（全体）'],secondary:['前腕','腕橈骨筋'],
+    tips:['足を肩幅に開いて立つ','肘を体の横に固定する（振らない）','手のひらを上に向けてダンベルを持ち上げる','小指側が少し高くなるように捻ると二頭筋により効く'],
+    warn:'反動を使って体を揺らすと二頭筋への刺激が減る。上体をまっすぐ保とう。',
+    pro:'軽めの重量から始め、フルレンジで動かすことが大切。小指側を意識して「ひねる」のがコツ。'
+  },
+  ar4:{
+    icon:'💪',name:'ハンマーカール（ダンベル）',level:'初〜中級',
+    look:'ダンベルを縦（ハンマーを持つように）に握り、肘を曲げる種目。通常のカールと持ち方が違う。',
+    primary:['上腕二頭筋（外側）','腕橈骨筋'],secondary:['前腕','腕筋'],
+    tips:['ダンベルを縦向きに握る（親指が上）','肘を体の横に固定したまま曲げる','左右交互or両手同時どちらでもOK','ゆっくり下ろして前腕を伸ばしきる'],
+    warn:'反動で体を揺らさない。腕だけの動きで行う。',
+    pro:'腕橈骨筋という前腕外側の筋肉も一緒に鍛えられ、腕全体が太くなりやすい。'
+  },
+  ar5:{
+    icon:'💪',name:'トライセップスプッシュダウン（ケーブル）',level:'初〜中級',
+    look:'ケーブルマシンのバーまたはロープを使い、肘を固定したまま下に押し下げる種目。',
+    primary:['上腕三頭筋（全体）'],secondary:['肩（前部）'],
+    tips:['バーまたはロープを胸の高さにセット','肘を体の横に固定して動かさない','バーを腿の前まで完全に押し下げる','ゆっくり（2〜3秒）戻してストレッチ'],
+    warn:'肘が前後に動くと三頭筋への刺激が逃げる。肘を固定することが最重要。',
+    pro:'ロープを使うと動きの最後で手首を外側に開けるので、三頭筋全体の収縮が強くなる。'
+  },
+  ar6:{
+    icon:'💪',name:'ダンベルキックバック',level:'初〜中級',
+    look:'前傾姿勢で肘を固定し、ダンベルを後方に押し伸ばす種目。上腕三頭筋の「仕上げ」に最適。',
+    primary:['上腕三頭筋（外側頭・長頭）'],secondary:['肩（後部）'],
+    tips:['体を前傾（45〜90度）させて片手でサポート','肘を腰の高さで固定したまま動かさない','ダンベルを後方に完全に伸ばし切る','収縮した状態で1〜2秒キープ'],
+    warn:'肘が下がると三頭筋への効きが弱くなる。肘は常に腰と同じ高さ以上に保つ。',
+    pro:'軽いダンベル（3〜8kg）で完全伸展を意識するのがポイント。重さより「締まった感覚」を大切に。'
+  },
+  ar7:{
+    icon:'💪',name:'オーバーヘッドエクステンション',level:'初〜中級',
+    look:'ダンベルを頭の上で持ち、肘を曲げてダンベルを頭の後ろに下ろしてから伸ばす種目。三頭筋の長頭に効く。',
+    primary:['上腕三頭筋（長頭）'],secondary:['上腕三頭筋（内側頭・外側頭）'],
+    tips:['座って行うと体が安定しやすい','両手でダンベルの一端を持つ','肘をしっかり頭の横に固定する','ゆっくりと（2〜3秒）後頭部まで下ろす'],
+    warn:'肘が外側に開くと肩への負担が増える。肘は頭の横（真上）に保つ。',
+    pro:'長頭は三頭筋の中で一番大きく、ここを鍛えると二の腕が太く見える。必須種目。'
+  },
+  ar8:{
+    icon:'💪',name:'チェアディップス（マシン/自重）',level:'初〜中級',
+    look:'ベンチや椅子、またはディップスマシンを使って体を上下させる種目。三頭筋と大胸筋を同時に鍛える。',
+    primary:['上腕三頭筋（全体）'],secondary:['大胸筋','三角筋（前部）'],
+    tips:['手をベンチの端につき、足を前方に伸ばす（または膝を曲げる）','肘を後方に向けながらゆっくり体を下ろす','30〜45度屈曲したら止めて押し上げる','体は垂直に保ち、前傾しすぎない'],
+    warn:'肩が前に出すぎると肩関節に負担がかかる。体をまっすぐ保とう。',
+    pro:'自重でできる三頭筋種目の王道。マシンなら重量調整が簡単で初心者にもやりやすい。'
   },
 };
 
@@ -3037,6 +3116,9 @@ const EXERCISE_PHOTOS = {
   ar3: W+'a/aa/Biceps_curl_with_dumbbell_1.svg',
   ar4: W+'8/8c/Alternating_hammer_curl_with_dumbbell_1.svg',
   ar5: W+'1/13/Triceps_pushdown_with_cable_1.svg',
+  ar6: SF+'Dumbbell_kickback_1.svg',
+  ar7: SF+'Overhead_triceps_extension_with_dumbbell_1.svg',
+  ar8: SF+'Dips_1.svg',
   // ── 腹・コア ──
   ab1: W+'1/11/Crunches_1.svg',
   ab2: W+'1/11/Crunches_1.svg',
@@ -3062,6 +3144,35 @@ const EXERCISE_PHOTOS = {
   ca4: 'https://images.unsplash.com/photo-1530143584546-02191bc84eb5?w=600&h=280&fit=crop&auto=format',
   ca5: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&h=280&fit=crop&auto=format',
 };
+
+// カテゴリ別トレーニング完全ガイド画像
+const BASE_URL = 'https://fujisss358.github.io/satoshi-life-os';
+const CATEGORY_GUIDES = {
+  shoulder: BASE_URL + '/guides/shoulder.jpg',
+  chest:    BASE_URL + '/guides/chest.jpg',
+  back:     BASE_URL + '/guides/back.jpg',
+  legs:     BASE_URL + '/guides/legs.jpg',
+  arms:     BASE_URL + '/guides/arms.jpg',
+  abs:      BASE_URL + '/guides/abs.jpg',
+  glutes:   BASE_URL + '/guides/glutes.jpg',
+};
+
+function showCategoryGuide(catId) {
+  const url = CATEGORY_GUIDES[catId];
+  if (!url) return;
+  const overlay = document.getElementById('guide-overlay');
+  const img = document.getElementById('guide-overlay-img');
+  if (!overlay || !img) return;
+  img.src = url;
+  overlay.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCategoryGuide() {
+  const overlay = document.getElementById('guide-overlay');
+  if (overlay) overlay.style.display = 'none';
+  document.body.style.overflow = '';
+}
 
 function showExerciseDetail(exId) {
   const info = EXERCISE_INFO[exId];
@@ -3204,7 +3315,10 @@ function renderGymTracker() {
     <div class="gym-cat" id="gym-cat-${cat.id}">
       <div class="gym-cat-header" onclick="toggleGymCat('${cat.id}')">
         <span>${cat.icon} ${cat.name}</span>
-        <span class="gym-cat-count">${catChecked}/${cat.exercises.length}</span>
+        <div style="display:flex;align-items:center;gap:6px;" onclick="event.stopPropagation()">
+          ${CATEGORY_GUIDES[cat.id] ? `<button class="gym-guide-btn" onclick="showCategoryGuide('${cat.id}')">📋 完全ガイド</button>` : ''}
+          <span class="gym-cat-count">${catChecked}/${cat.exercises.length}</span>
+        </div>
       </div>
       <div class="gym-cat-body">
         ${cat.exercises.map(ex => {
