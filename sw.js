@@ -1,6 +1,6 @@
 // SATOSHI LIFE OS Service Worker
-// Version: v20260513-2244  ← deploy.sh が自動書き換え
-const SW_VERSION = "v20260513-2244";
+// Version: v20260518-1303  ← deploy.sh が自動書き換え
+const SW_VERSION = "v20260518-1303";
 const CACHE_NAME = "satoshi-life-os-" + SW_VERSION;
 const OFFLINE_URL = "./";
 

@@ -1035,6 +1035,13 @@ body{
 .log-cal-weight{font-size:9px;font-weight:700;color:var(--primary);white-space:nowrap;}
 .log-cal-sleep{font-size:9px;color:var(--text-dim);white-space:nowrap;}
 .log-cal-cal-dot{width:6px;height:6px;border-radius:50%;}
+.log-cal-kichi{display:flex;flex-direction:column;align-items:center;gap:1px;width:100%;}
+.kichi-chip{font-size:7px;font-weight:700;border-radius:2px;padding:1px 2px;line-height:1.3;white-space:nowrap;max-width:100%;text-align:center;}
+.kichi-taian{background:#fef3c7;color:#92400e;}
+.kichi-ichiryuu{background:#ede9fe;color:#5b21b6;}
+.kichi-tenshabi{background:#fee2e2;color:#991b1b;}
+.kichi-tora{background:#dbeafe;color:#1e40af;}
+.kichi-mi{background:#dcfce7;color:#15803d;}
 
 /* ─── Exercise Detail Modal ─── */
 .ex-modal-overlay{
@@ -4745,6 +4752,104 @@ function getWorkoutCatsForDate(dateStr) {
   return [...cats];
 }
 
+// ═══════════════════════════════════════════
+//  吉日計算システム（大安・一粒万倍日・天赦日・寅の日・巳の日）
+// ═══════════════════════════════════════════
+
+// エポック日（1970-01-01=0）を計算（タイムゾーン非依存）
+function _epochDay(dateStr) {
+  const [y,m,d] = dateStr.split('-').map(Number);
+  return Math.floor(Date.UTC(y, m-1, d) / 86400000);
+}
+
+// 日の干支番号（甲子=0〜癸亥=59）
+// 検証: 2020-01-01(epochDay=18262) → (18262+2440588+5)%60 = 55 = 己未 ✓
+function _dayKanshi(dateStr) {
+  return (_epochDay(dateStr) + 2440588 + 5) % 60;
+}
+
+// 日の十二支（子=0,丑=1,寅=2,卯=3,辰=4,巳=5,午=6,未=7,申=8,酉=9,戌=10,亥=11）
+function _dayBranch(dateStr) { return _dayKanshi(dateStr) % 12; }
+
+// ── 旧暦月首テーブル（大安用） ──
+const _LUNAR_STARTS = [
+  ['2026-01-18',12],['2026-02-17',1],['2026-03-19',2],['2026-04-17',3],
+  ['2026-05-17',4], ['2026-06-15',5],['2026-07-15',6],['2026-08-14',7],
+  ['2026-09-12',8], ['2026-10-12',9],['2026-11-10',10],['2026-12-10',11],
+  ['2027-01-09',12],['2027-02-06',1],['2027-03-08',2],['2027-04-07',3],
+  ['2027-05-06',4], ['2027-06-05',5],['2027-07-04',6],['2027-08-03',7],
+  ['2027-09-01',8], ['2027-10-01',9],['2027-10-30',10],['2027-11-29',11],
+  ['2027-12-28',12],['2028-01-27',1],
+];
+
+function _lunarMonthDay(dateStr) {
+  let lunarM = 12, startStr = '2026-01-18';
+  for (const [s, m] of _LUNAR_STARTS) {
+    if (dateStr >= s) { lunarM = m; startStr = s; } else break;
+  }
+  const lunarD = _epochDay(dateStr) - _epochDay(startStr) + 1;
+  return [lunarM, lunarD];
+}
+
+// 六曜: (旧暦月+旧暦日) % 6 → 4 = 大安
+function _isTaian(dateStr) {
+  const [m, d] = _lunarMonthDay(dateStr);
+  return (m + d) % 6 === 4;
+}
+
+// ── 節月テーブル（月の十二支、一粒万倍日・天赦日用） ──
+const _SEKKI = [
+  ['2026-01-05',1],['2026-02-04',2],['2026-03-06',3],['2026-04-05',4],
+  ['2026-05-06',5],['2026-06-06',6],['2026-07-07',7],['2026-08-07',8],
+  ['2026-09-08',9],['2026-10-08',10],['2026-11-07',11],['2026-12-07',0],
+  ['2027-01-05',1],['2027-02-04',2],['2027-03-06',3],['2027-04-05',4],
+  ['2027-05-06',5],['2027-06-06',6],['2027-07-07',7],['2027-08-07',8],
+  ['2027-09-08',9],['2027-10-08',10],['2027-11-07',11],['2027-12-07',0],
+  ['2028-01-05',1],['2028-02-04',2],
+];
+
+function _monthBranch(dateStr) {
+  let branch = 1;
+  for (const [s, b] of _SEKKI) { if (dateStr >= s) branch = b; else break; }
+  return branch;
+}
+
+// 一粒万倍日: 月の三合（申子辰・寅午戌・巳酉丑・亥卯未）に対応する日の十二支
+// 子辰申月→寅午日、丑巳酉月→巳酉日、寅午戌月→子申日、卯未亥月→卯亥日
+const _ICHIRYUU = {0:[2,6],4:[2,6],8:[2,6], 1:[5,9],5:[5,9],9:[5,9],
+                   2:[0,8],6:[0,8],10:[0,8], 3:[3,11],7:[3,11],11:[3,11]};
+
+function _isIchiryuu(dateStr) {
+  return (_ICHIRYUU[_monthBranch(dateStr)] || []).includes(_dayBranch(dateStr));
+}
+
+// 天赦日: 春=戊寅(干支14)・夏=甲午(30)・秋=戊申(44)・冬=甲子(0)
+const _TENSHABI_SEASONS = [
+  ['2026-02-04','2026-05-06',14],['2026-05-06','2026-08-07',30],
+  ['2026-08-07','2026-11-07',44],['2026-11-07','2027-02-04',0],
+  ['2027-02-04','2027-05-06',14],['2027-05-06','2027-08-07',30],
+  ['2027-08-07','2027-11-07',44],['2027-11-07','2028-02-04',0],
+];
+
+function _isTenshabi(dateStr) {
+  const k = _dayKanshi(dateStr);
+  for (const [s, e, rk] of _TENSHABI_SEASONS) {
+    if (dateStr >= s && dateStr < e) return k === rk;
+  }
+  return false;
+}
+
+// 吉日ラベル一覧を返す
+function getKichijitsu(dateStr) {
+  const out = [];
+  if (_isTenshabi(dateStr))   out.push({text:'天赦日',  cls:'kichi-tenshabi'});
+  if (_isIchiryuu(dateStr))   out.push({text:'一粒万倍日',cls:'kichi-ichiryuu'});
+  if (_isTaian(dateStr))      out.push({text:'大安',    cls:'kichi-taian'});
+  if (_dayBranch(dateStr)===2) out.push({text:'寅の日',  cls:'kichi-tora'});
+  if (_dayBranch(dateStr)===5) out.push({text:'巳の日',  cls:'kichi-mi'});
+  return out;
+}
+
 function renderLogCalendar() {
   const container = document.getElementById('log-calendar-grid');
   if (!container) return;
@@ -4790,6 +4895,11 @@ function renderLogCalendar() {
 
     html += `<div class="log-cal-day ${isToday ? 'today' : ''}" onclick="showLogDayDetail('${dateStr}')">`;
     html += `<div class="log-cal-daynum">${d}</div>`;
+    // 吉日バッジ
+    const kichi = getKichijitsu(dateStr);
+    if (kichi.length > 0) {
+      html += `<div class="log-cal-kichi">${kichi.map(k=>`<span class="kichi-chip ${k.cls}">${k.text}</span>`).join('')}</div>`;
+    }
     // 筋群バッジ
     if (gymCats.length > 0) {
       html += `<div class="log-cal-badges">${gymCats.map(id => `<span class="log-cal-badge">${GYM_CAT_ICON[id]||'💪'}</span>`).join('')}</div>`;
