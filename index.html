@@ -1178,20 +1178,11 @@ body{
   <button class="nav-btn" onclick="showPage('habits',this)">
     <span class="nav-icon">✅</span>習慣
   </button>
-  <button class="nav-btn" onclick="showPage('money',this)">
-    <span class="nav-icon">💰</span>稼ぐ力
+  <button class="nav-btn" onclick="showPage('business',this)">
+    <span class="nav-icon">🚀</span>ビジネス
   </button>
-  <button class="nav-btn" onclick="showPage('vision',this)">
-    <span class="nav-icon">🎯</span>ビジョン
-  </button>
-  <button class="nav-btn" onclick="showPage('achievements',this)">
-    <span class="nav-icon">🏆</span>実績
-  </button>
-  <button class="nav-btn" onclick="showPage('hints',this)">
-    <span class="nav-icon">💡</span>ヒント
-  </button>
-  <button class="nav-btn" onclick="showPage('habitdesign',this)">
-    <span class="nav-icon">🧬</span>習慣設計
+  <button class="nav-btn" onclick="showPage('investment',this)">
+    <span class="nav-icon">📈</span>投資
   </button>
   <button class="nav-btn" onclick="showPage('lifelog',this)">
     <span class="nav-icon">📅</span>ログ
@@ -1291,9 +1282,17 @@ body{
 
 <!-- HABITS -->
 <div id="page-habits" class="page">
-  <div class="section-heading">習慣トラッカー</div>
-  <div class="section-sub">毎日の積み重ねが、最高の自分を作る</div>
-  <div class="date-chip" id="habits-date"></div>
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:20px 16px 0;">
+    <div>
+      <div class="section-heading" style="padding:0;margin-bottom:4px;">習慣トラッカー</div>
+      <div class="section-sub" style="padding:0;margin-bottom:0;">毎日の積み重ねが、最高の自分を作る</div>
+    </div>
+    <div style="text-align:center;background:linear-gradient(135deg,var(--primary),var(--pink));border-radius:16px;padding:10px 16px;min-width:68px;flex-shrink:0;">
+      <div id="habit-consec-days" style="font-size:26px;font-weight:900;color:#fff;line-height:1;">0</div>
+      <div style="font-size:9px;color:rgba(255,255,255,0.85);margin-top:2px;font-weight:600;">継続日数</div>
+    </div>
+  </div>
+  <div class="date-chip" id="habits-date" style="margin:8px 16px 0;"></div>
   <div id="habit-full-list"></div>
   <div class="card" style="margin-top:20px;">
     <div class="card-title">📊 週間ヒートマップ</div>
@@ -1302,10 +1301,97 @@ body{
 </div>
 
 <!-- MONEY -->
-<div id="page-money" class="page">
-  <div class="section-heading">稼ぐ力ダッシュボード</div>
-  <div class="section-sub">収入・スキル・アイデアを一元管理</div>
-  <div class="market-hero" id="market-mode-card">
+<div id="page-business" class="page">
+  <div class="section-heading">🚀 ビジネス</div>
+  <div class="section-sub">AI × クリエイティブで収益を作る</div>
+
+  <!-- AI占い -->
+  <div class="card">
+    <div class="card-title">🔮 AI占い・今日の運勢</div>
+    <div id="fortune-today-area" style="margin-bottom:12px;"></div>
+    <div style="background:var(--primary-dim);border-radius:10px;padding:12px;margin-bottom:12px;">
+      <div style="font-size:11px;font-weight:700;color:var(--primary);margin-bottom:8px;">✨ 今日の吉日情報</div>
+      <div id="fortune-kichi-list" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+    </div>
+    <div style="margin-bottom:12px;">
+      <div style="font-size:11px;font-weight:700;color:var(--text-dim);margin-bottom:6px;">🎂 誕生日を登録して相性・運気を確認</div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <input type="date" id="fortune-birthday" style="flex:1;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--card2);color:var(--text);font-size:13px;" onchange="saveFortuneBirthday()">
+        <button class="btn btn-primary btn-sm" onclick="renderFortuneBirthday()">占う</button>
+      </div>
+      <div id="fortune-birthday-result" style="margin-top:8px;font-size:12px;color:var(--text);line-height:1.7;"></div>
+    </div>
+    <div style="font-size:11px;font-weight:700;color:var(--text-dim);margin-bottom:6px;">🔗 おすすめAI占いツール</div>
+    <div style="display:flex;flex-direction:column;gap:5px;">
+      <a href="https://www.cocoloni.jp/fortune/" target="_blank" style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--card2);border-radius:8px;text-decoration:none;color:var(--text);font-size:12px;"><span>🔮 ココロニプロ – 総合占い</span><span>→</span></a>
+      <a href="https://uranai.js88.com/" target="_blank" style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--card2);border-radius:8px;text-decoration:none;color:var(--text);font-size:12px;"><span>⭐ js88 – 無料占い</span><span>→</span></a>
+      <a href="https://chatgpt.com/" target="_blank" style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--card2);border-radius:8px;text-decoration:none;color:var(--text);font-size:12px;"><span>🤖 ChatGPT – AI個人鑑定</span><span>→</span></a>
+    </div>
+  </div>
+
+  <!-- AI音楽 -->
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <div class="card-title" style="margin-bottom:0;">🎵 AI音楽プロジェクト</div>
+      <button class="btn btn-primary btn-sm" onclick="openModal('music-modal')">+ 追加</button>
+    </div>
+    <div id="music-project-list">
+      <div class="empty-state"><div class="empty-icon">🎵</div><p>AI音楽プロジェクトを記録しよう</p></div>
+    </div>
+    <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px;">
+      <div style="font-size:11px;font-weight:700;color:var(--text-dim);margin-bottom:6px;">🔗 AI音楽ツール</div>
+      <div style="display:flex;flex-direction:column;gap:5px;">
+        <a href="https://suno.com/" target="_blank" style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--card2);border-radius:8px;text-decoration:none;color:var(--text);font-size:12px;"><span>🎶 Suno AI – 歌詞・メロディ生成</span><span>→</span></a>
+        <a href="https://www.udio.com/" target="_blank" style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--card2);border-radius:8px;text-decoration:none;color:var(--text);font-size:12px;"><span>🎸 Udio – 高品質AI音楽</span><span>→</span></a>
+        <a href="https://www.stableaudio.com/" target="_blank" style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--card2);border-radius:8px;text-decoration:none;color:var(--text);font-size:12px;"><span>🔊 Stable Audio – BGM生成</span><span>→</span></a>
+        <a href="https://mubert.com/" target="_blank" style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--card2);border-radius:8px;text-decoration:none;color:var(--text);font-size:12px;"><span>🎼 Mubert – ロイヤリティフリー収益化</span><span>→</span></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📈 今月の収入</div>
+    <div class="income-total" id="monthly-total">¥0</div>
+    <div class="income-sub" id="monthly-sub">今月の記録: 0件</div>
+    <div class="chart-container"><canvas id="income-chart"></canvas></div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <div class="card-title" style="margin-bottom:0;">💵 収入記録</div>
+      <button class="btn btn-primary btn-sm" onclick="openModal('income-modal')">+ 追加</button>
+    </div>
+    <div id="income-list">
+      <div class="empty-state"><div class="empty-icon">💳</div><p>まだ収入が記録されていません</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <div class="card-title" style="margin-bottom:0;">📚 スキル進捗</div>
+      <button class="btn btn-ghost btn-sm" onclick="openModal('skill-modal')">+ スキル追加</button>
+    </div>
+    <div id="skill-list"></div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <div class="card-title" style="margin-bottom:0;">💡 ビジネスアイデア</div>
+      <button class="btn btn-gold btn-sm" onclick="openModal('idea-modal')">+ アイデア</button>
+    </div>
+    <div id="idea-list">
+      <div class="empty-state"><div class="empty-icon">💡</div><p>アイデアを記録しよう！</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- INVESTMENT -->
+<div id="page-investment" class="page">
+  <div class="section-heading">📈 投資</div>
+  <div class="section-sub">FXは予測ゲームではなく、ルールを守るシステム</div>
+
+  <!-- Market Mode -->
+  <div class="card" style="background:linear-gradient(135deg,rgba(16,185,129,0.08),rgba(5,150,105,0.04));border-color:rgba(16,185,129,0.3);">
     <div class="market-head">
       <div>
         <div class="market-title">Market Mode</div>
@@ -1359,6 +1445,7 @@ body{
       </div>
     </div>
   </div>
+
   <!-- FX分析タブナビ -->
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px;">
     <button onclick="switchFxTab('eco');document.getElementById('fx-dashboard-card').scrollIntoView({behavior:'smooth',block:'start'});"
@@ -1532,36 +1619,16 @@ body{
       <!-- リサーチリンク集 -->
       <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;">📰 リサーチリンク集（タップして開く）</div>
       <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:14px;">
-        <a href="https://www.dailyfx.com/market-news" target="_blank" class="fx-research-link">
-          <span>🌐 DailyFX – マーケットニュース</span><span>→</span>
-        </a>
-        <a href="https://www.fxstreet.com/news" target="_blank" class="fx-research-link">
-          <span>🌐 FXStreet – グローバルアナリスト見解</span><span>→</span>
-        </a>
-        <a href="https://www.gaitame.com/markets/order/" target="_blank" class="fx-research-link">
-          <span>🌐 外為どっとコム – 注文情報・建玉</span><span>→</span>
-        </a>
-        <a href="https://currency-strength.com/" target="_blank" class="fx-research-link">
-          <span>🌐 通貨強弱チャート</span><span>→</span>
-        </a>
-        <a href="https://jp.reuters.com/" target="_blank" class="fx-research-link">
-          <span>🌐 ロイター – 最新ニュース</span><span>→</span>
-        </a>
-        <a href="https://www.bloomberg.com/jp" target="_blank" class="fx-research-link">
-          <span>🌐 Bloomberg Japan</span><span>→</span>
-        </a>
-        <a href="https://diamond.jp/zai" target="_blank" class="fx-research-link">
-          <span>🌐 ダイヤモンドZAi – FX情報</span><span>→</span>
-        </a>
-        <a href="https://www.mufg.jp/gcib/mufgri/forex/" target="_blank" class="fx-research-link">
-          <span>🌐 三菱UFJ銀行 – 為替レポート</span><span>→</span>
-        </a>
-        <a href="https://www.smbc.co.jp/hojin/kokusai/kawase/" target="_blank" class="fx-research-link">
-          <span>🌐 三井住友銀行 – 為替情報</span><span>→</span>
-        </a>
-        <a href="https://jp.investing.com/news/forex-news" target="_blank" class="fx-research-link">
-          <span>🌐 Investing.com – FXニュース（日本語）</span><span>→</span>
-        </a>
+        <a href="https://www.dailyfx.com/market-news" target="_blank" class="fx-research-link"><span>🌐 DailyFX – マーケットニュース</span><span>→</span></a>
+        <a href="https://www.fxstreet.com/news" target="_blank" class="fx-research-link"><span>🌐 FXStreet – グローバルアナリスト見解</span><span>→</span></a>
+        <a href="https://www.gaitame.com/markets/order/" target="_blank" class="fx-research-link"><span>🌐 外為どっとコム – 注文情報・建玉</span><span>→</span></a>
+        <a href="https://currency-strength.com/" target="_blank" class="fx-research-link"><span>🌐 通貨強弱チャート</span><span>→</span></a>
+        <a href="https://jp.reuters.com/" target="_blank" class="fx-research-link"><span>🌐 ロイター – 最新ニュース</span><span>→</span></a>
+        <a href="https://www.bloomberg.com/jp" target="_blank" class="fx-research-link"><span>🌐 Bloomberg Japan</span><span>→</span></a>
+        <a href="https://diamond.jp/zai" target="_blank" class="fx-research-link"><span>🌐 ダイヤモンドZAi – FX情報</span><span>→</span></a>
+        <a href="https://www.mufg.jp/gcib/mufgri/forex/" target="_blank" class="fx-research-link"><span>🌐 三菱UFJ銀行 – 為替レポート</span><span>→</span></a>
+        <a href="https://www.smbc.co.jp/hojin/kokusai/kawase/" target="_blank" class="fx-research-link"><span>🌐 三井住友銀行 – 為替情報</span><span>→</span></a>
+        <a href="https://jp.investing.com/news/forex-news" target="_blank" class="fx-research-link"><span>🌐 Investing.com – FXニュース（日本語）</span><span>→</span></a>
       </div>
 
       <!-- AI要約 -->
@@ -1576,114 +1643,6 @@ body{
       <div style="font-size:11px;font-weight:700;color:var(--primary);margin-bottom:8px;">👤 本日のアナリスト見解メモ</div>
       <div id="fx-analyst-slots"></div>
     </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">📈 今月の収入</div>
-    <div class="income-total" id="monthly-total">¥0</div>
-    <div class="income-sub" id="monthly-sub">今月の記録: 0件</div>
-    <div class="chart-container"><canvas id="income-chart"></canvas></div>
-  </div>
-
-  <div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-      <div class="card-title" style="margin-bottom:0;">💵 収入記録</div>
-      <button class="btn btn-primary btn-sm" onclick="openModal('income-modal')">+ 追加</button>
-    </div>
-    <div id="income-list">
-      <div class="empty-state"><div class="empty-icon">💳</div><p>まだ収入が記録されていません</p></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-      <div class="card-title" style="margin-bottom:0;">📚 スキル進捗</div>
-      <button class="btn btn-ghost btn-sm" onclick="openModal('skill-modal')">+ スキル追加</button>
-    </div>
-    <div id="skill-list"></div>
-  </div>
-
-  <div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-      <div class="card-title" style="margin-bottom:0;">💡 ビジネスアイデア</div>
-      <button class="btn btn-gold btn-sm" onclick="openModal('idea-modal')">+ アイデア</button>
-    </div>
-    <div id="idea-list">
-      <div class="empty-state"><div class="empty-icon">💡</div><p>アイデアを記録しよう！</p></div>
-    </div>
-  </div>
-</div>
-
-<!-- VISION -->
-<div id="page-vision" class="page">
-  <div class="section-heading">ビジョン＆ゴール</div>
-  <div class="section-sub">理想の人生を常に見える化しておく</div>
-  <div class="card">
-    <div class="card-title">✨ 3年後の理想の自分</div>
-    <textarea class="vision-statement" id="vision-statement" placeholder="3年後のサトシはどんな状態？どんな人生を生きている？自由に書いてみてください..." rows="5"></textarea>
-    <div style="text-align:right;margin-top:8px;">
-      <button class="btn btn-primary btn-sm" onclick="saveVision()">保存</button>
-    </div>
-  </div>
-  <div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-      <div class="card-title" style="margin-bottom:0;">🎯 目標リスト</div>
-      <button class="btn btn-primary btn-sm" onclick="openModal('goal-modal')">+ 目標追加</button>
-    </div>
-    <div id="goal-list">
-      <div class="empty-state"><div class="empty-icon">🌟</div><p>目標を設定しよう！</p></div>
-    </div>
-  </div>
-  <div class="card" style="background:linear-gradient(135deg,rgba(236,72,153,0.08),rgba(147,51,234,0.08));border-color:rgba(236,72,153,0.25);">
-    <div class="card-title">💫 モチベーションクォート</div>
-    <div id="vision-quote" style="font-size:15px;line-height:1.8;font-style:italic;color:var(--text);"></div>
-    <div style="text-align:right;margin-top:12px;">
-      <button class="btn btn-ghost btn-sm" onclick="refreshVisionQuote()">🔄 新しい言葉</button>
-    </div>
-  </div>
-</div>
-
-<!-- ACHIEVEMENTS -->
-<div id="page-achievements" class="page">
-  <div class="section-heading">実績＆バッジ</div>
-  <div class="section-sub">努力の軌跡がここに刻まれる</div>
-
-  <div class="card" style="background:linear-gradient(135deg,#fdf2f8,#f3e8ff);border-color:rgba(236,72,153,0.25);">
-    <div style="display:flex;align-items:center;gap:20px;">
-      <div style="text-align:center;">
-        <div style="font-size:48px;font-weight:800;background:linear-gradient(135deg,#ec4899,#9333ea);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;" id="ach-level">1</div>
-        <div style="font-size:12px;color:var(--text-dim);">Level</div>
-      </div>
-      <div style="flex:1;">
-        <div style="font-size:14px;font-weight:600;" id="ach-rank">見習いトレーダー</div>
-        <div style="font-size:12px;color:var(--text-dim);margin-top:4px;">総XP: <span id="ach-total-xp">0</span></div>
-        <div class="habit-progress-bar" style="margin:8px 0 4px;">
-          <div class="habit-progress-fill" id="ach-xp-bar" style="width:0%"></div>
-        </div>
-        <div style="font-size:11px;color:var(--text-dim);"><span id="ach-xp-current">0</span> / <span id="ach-xp-needed">100</span> XP (次のレベルまで)</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">🏅 獲得バッジ</div>
-    <div class="badge-grid" id="badge-grid"></div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">📊 ライフスタッツ</div>
-    <div id="life-stats-list" style="display:flex;flex-direction:column;gap:10px;"></div>
-  </div>
-
-  <!-- 週次・月次レポート -->
-  <div class="card">
-    <div class="card-title">📈 振り返りレポート</div>
-    <div class="report-tab-row">
-      <button class="report-tab active" onclick="switchReport('week',this)">今週</button>
-      <button class="report-tab" onclick="switchReport('month',this)">今月</button>
-    </div>
-    <div id="report-week" class="report-section active"></div>
-    <div id="report-month" class="report-section"></div>
   </div>
 </div>
 
@@ -1747,152 +1706,6 @@ body{
   <!-- 日別詳細（タップした日） -->
   <div class="card" id="log-day-detail" style="display:none;">
     <div id="log-day-detail-content"></div>
-  </div>
-</div>
-
-<!-- HINTS -->
-<div id="page-hints" class="page">
-  <div class="section-heading">💡 サトシ専用ヒント</div>
-  <div class="section-sub">理想の自分に近づくための具体的な習慣と行動リスト</div>
-
-  <div class="hint-today-card" id="hint-today-card"></div>
-
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-    <div class="hint-practicing-count" id="hint-practicing-count" style="margin-bottom:0;"></div>
-    <button class="btn btn-ghost btn-sm" onclick="refreshTodayHint()">🔄 別のヒントを見る</button>
-  </div>
-
-  <div id="hint-categories"></div>
-</div>
-
-<!-- HABIT DESIGN SCIENCE -->
-<div id="page-habitdesign" class="page">
-  <div class="section-heading">🧬 習慣設計の科学</div>
-  <div class="section-sub">習慣化できる人を徹底分析し、仕組みで動く自分を作る</div>
-
-  <!-- intro -->
-  <div class="hds-intro-banner">
-    <div class="hds-intro-title">💡 習慣化は「意志力」の問題ではない</div>
-    <div class="hds-intro-sub">研究によると、習慣の95%は意識的な決断なしに行われる自動行動。成功者が実践しているのは「頑張る」ことではなく、<strong>自動的に動ける仕組みを設計すること</strong>。このページでその仕組みを構築しよう。</div>
-  </div>
-
-  <!-- 1: 成功者 vs 失敗者 -->
-  <div class="hds-section-label">📊 習慣化できる人 vs できない人の違い</div>
-  <div class="card" style="padding:14px;">
-    <div class="hds-compare-row">
-      <div class="hds-compare-fail"><div class="hds-compare-tag">❌ できない人</div><div class="hds-compare-text">意志力で乗り越えようとする</div><div class="hds-compare-detail">「今日から頑張る」を繰り返し、疲れると崩れる</div></div>
-      <div class="hds-compare-win"><div class="hds-compare-tag">✅ できる人</div><div class="hds-compare-text">環境と仕組みを設計する</div><div class="hds-compare-detail">意志力が不要な状態を作り、行動が自動化される</div></div>
-    </div>
-    <div class="hds-compare-row">
-      <div class="hds-compare-fail"><div class="hds-compare-tag">❌ できない人</div><div class="hds-compare-text">結果目標だけを持つ</div><div class="hds-compare-detail">「体重を5kg減らす」→ 達成できないと挫折</div></div>
-      <div class="hds-compare-win"><div class="hds-compare-tag">✅ できる人</div><div class="hds-compare-text">アイデンティティで動く</div><div class="hds-compare-detail">「私は健康的な人間だ」→ 行動がアイデンティティの証明になる</div></div>
-    </div>
-    <div class="hds-compare-row">
-      <div class="hds-compare-fail"><div class="hds-compare-tag">❌ できない人</div><div class="hds-compare-text">最初から高い目標を設定する</div><div class="hds-compare-detail">「毎日1時間運動する」→ 初日から挫折しやすい</div></div>
-      <div class="hds-compare-win"><div class="hds-compare-tag">✅ できる人</div><div class="hds-compare-text">2分間ルールで最小化する</div><div class="hds-compare-detail">「靴を履くだけ」から始め、習慣のとっかかりを作る</div></div>
-    </div>
-    <div class="hds-compare-row">
-      <div class="hds-compare-fail"><div class="hds-compare-tag">❌ できない人</div><div class="hds-compare-text">1回失敗したらやめてしまう</div><div class="hds-compare-detail">完璧主義の「0か100か」思考で長続きしない</div></div>
-      <div class="hds-compare-win"><div class="hds-compare-tag">✅ できる人</div><div class="hds-compare-text">ネバーミスツールールを守る</div><div class="hds-compare-detail">1回のミスは許容。2回続けて休まないことを鉄則にする</div></div>
-    </div>
-    <div class="hds-compare-row">
-      <div class="hds-compare-fail"><div class="hds-compare-tag">❌ できない人</div><div class="hds-compare-text">「なんとなく」取り組む</div><div class="hds-compare-detail">いつやるか・どこでやるかが曖昧で後回しになる</div></div>
-      <div class="hds-compare-win"><div class="hds-compare-tag">✅ できる人</div><div class="hds-compare-text">実装意図を事前に決める</div><div class="hds-compare-detail">「朝食後に、リビングで、5分読書する」と具体的に設定</div></div>
-    </div>
-    <div class="hds-compare-row">
-      <div class="hds-compare-fail"><div class="hds-compare-tag">❌ できない人</div><div class="hds-compare-text">WHYが表面的・あいまい</div><div class="hds-compare-detail">「健康のために」「なんとなく良さそう」では動けない</div></div>
-      <div class="hds-compare-win"><div class="hds-compare-tag">✅ できる人</div><div class="hds-compare-text">感情と結びついたWHYを持つ</div><div class="hds-compare-detail">5WHYで核心の理由まで掘り下げ、行動の燃料にする</div></div>
-    </div>
-    <div class="hds-compare-row" style="margin-bottom:0;">
-      <div class="hds-compare-fail"><div class="hds-compare-tag">❌ できない人</div><div class="hds-compare-text">振り返りをしない</div><div class="hds-compare-detail">失敗しても何も変えず、同じパターンを繰り返す</div></div>
-      <div class="hds-compare-win"><div class="hds-compare-tag">✅ できる人</div><div class="hds-compare-text">週次で改善サイクルを回す</div><div class="hds-compare-detail">うまくいっていること・いないことを分析して調整する</div></div>
-    </div>
-  </div>
-
-  <!-- 2: アイデンティティ宣言 -->
-  <div class="hds-section-label">🪪 アイデンティティ宣言</div>
-  <div class="card">
-    <div class="card-title">「私は〇〇な人間だ」を決める</div>
-    <div style="font-size:12px;color:var(--text-dim);margin-bottom:12px;line-height:1.6;">習慣は結果ではなく、<strong>アイデンティティの証明</strong>。「体重を減らしたい人」ではなく「健康的な人間」として行動すると、習慣が自然になる。（ジェームズ・クリア『Atomic Habits』）</div>
-    <div class="hds-identity-saved" id="hds-identity-display"></div>
-    <textarea class="hds-identity-input" id="hds-identity-input" rows="3"
-      placeholder="例: 私は毎朝ルーティンをこなし、自己投資を続ける規律ある人間だ。&#10;例: 私はお金と健康を同時に育てているビジネスアスリートだ。"></textarea>
-    <div style="display:flex;justify-content:flex-end;margin-top:8px;">
-      <button class="btn btn-primary btn-sm" onclick="saveIdentity()">💾 宣言を保存 +10 XP</button>
-    </div>
-  </div>
-
-  <!-- 3: 各習慣のWHY設定 -->
-  <div class="hds-section-label">🔥 各習慣のWHYと実装意図を設定する</div>
-  <div style="font-size:12px;color:var(--text-dim);margin-bottom:12px;line-height:1.6;">各習慣について「なぜやるか」「いつ・どこで・どうやって」を設定しよう。明確なWHYは行動の燃料になり、実装意図は実行率を2〜3倍に高める（ゴルヴィッツァー研究）。</div>
-  <div id="hds-why-list"></div>
-
-  <!-- 4: 環境設計チェックリスト -->
-  <div class="hds-section-label">🏠 環境設計チェックリスト</div>
-  <div class="card">
-    <div class="card-title">良い習慣を「簡単」に、悪い習慣を「難しく」する</div>
-    <div style="font-size:12px;color:var(--text-dim);margin-bottom:12px;line-height:1.6;">人間の行動の80%以上は環境によって引き起こされる。意志力を使わずに習慣が実行される環境を設計しよう。</div>
-    <div class="hds-env-progress" id="hds-env-progress"></div>
-    <div id="hds-env-list"></div>
-  </div>
-
-  <!-- 5: Never Miss Twice -->
-  <div class="hds-section-label">⚡ ネバーミスツールール トラッカー</div>
-  <div class="card">
-    <div class="card-title">1回のミスは許す。2回続けてミスしない</div>
-    <div style="font-size:12px;color:var(--text-dim);margin-bottom:10px;line-height:1.6;">1回の失敗は事故。2回続けると習慣になる。完璧主義を手放し、「小さくても継続する」ことを最優先にしよう。（ジェームズ・クリア）</div>
-    <div class="hds-nmt-msg" id="hds-nmt-msg"></div>
-    <div style="font-size:11px;color:var(--text-dim);margin-bottom:4px;">過去28日間の習慣達成状況（習慣を1つでも完了した日）</div>
-    <div class="hds-nmt-grid" id="hds-nmt-grid"></div>
-    <div class="hds-nmt-legend">
-      <div class="hds-nmt-legend-item"><div class="hds-nmt-dot" style="background:rgba(21,128,61,0.2);"></div>達成あり</div>
-      <div class="hds-nmt-legend-item"><div class="hds-nmt-dot" style="background:rgba(234,88,12,0.2);"></div>1回ミス（問題なし）</div>
-      <div class="hds-nmt-legend-item"><div class="hds-nmt-dot" style="background:rgba(220,38,38,0.2);"></div>2回連続ミス（要注意）</div>
-      <div class="hds-nmt-legend-item"><div class="hds-nmt-dot" style="background:rgba(192,132,252,0.08);border:1px solid var(--border);"></div>データなし</div>
-    </div>
-  </div>
-
-  <!-- 6: 週次振り返り -->
-  <div class="hds-section-label">📋 週次振り返り</div>
-  <div class="card">
-    <div class="card-title">毎週1回、改善サイクルを回す</div>
-    <div style="font-size:12px;color:var(--text-dim);margin-bottom:14px;line-height:1.6;">振り返りなしの習慣は改善されない。週1回、5分だけ振り返ることで成功確率が大幅に上がる。</div>
-    <div class="hds-why-label">🌟 今週うまくいったこと・継続できたこと</div>
-    <textarea class="hds-review-textarea" id="hds-review-wins" rows="2" placeholder="例: 運動を4日連続できた、朝の読書を習慣化できてきた..."></textarea>
-    <div class="hds-why-label">🔧 うまくいかなかったこと・改善したいこと</div>
-    <textarea class="hds-review-textarea" id="hds-review-challenges" rows="2" placeholder="例: 夜スマホを見てしまい睡眠が乱れた、瞑想をすっ飛ばした..."></textarea>
-    <div class="hds-why-label">🎯 来週フォーカスすること（1つだけ）</div>
-    <textarea class="hds-review-textarea" id="hds-review-focus" rows="2" placeholder="例: 就寝前のスマホをやめ、代わりに読書する環境を作る"></textarea>
-    <div style="display:flex;justify-content:flex-end;">
-      <button class="btn btn-primary btn-sm" onclick="saveWeeklyReview()">💾 振り返りを保存 +20 XP</button>
-    </div>
-    <div class="hds-review-history" id="hds-review-history" style="display:none;">
-      <div style="font-size:12px;font-weight:600;color:var(--text-dim);margin-bottom:10px;">📚 過去の振り返り</div>
-      <div id="hds-review-history-list"></div>
-    </div>
-  </div>
-
-  <!-- 7: 習慣化の科学ファクト -->
-  <div class="hds-section-label">🔬 習慣化の科学 — 知っておくべき事実</div>
-  <div class="hds-science-card">
-    <div class="hds-science-num">66</div>
-    <div class="hds-science-body"><div class="hds-science-title">習慣の形成には平均66日かかる</div><div class="hds-science-desc">「21日で習慣化」は都市伝説。ロンドン大学の研究では、習慣が自動化されるまで平均66日（18〜254日）かかる。短期で諦めず、長期目線で続けることが重要。</div><div class="hds-science-source">📖 出典: Phillippa Lally et al. (2010), UCL</div></div>
-  </div>
-  <div class="hds-science-card">
-    <div class="hds-science-num">40</div>
-    <div class="hds-science-body"><div class="hds-science-title">人間の行動の約40%は習慣（自動行動）</div><div class="hds-science-desc">毎日の行動のほぼ半分は、意識的に決断していない。この「自動操縦」を自分で設計するのが習慣設計の核心。良い習慣をプログラムすれば、努力なしに成果が出続ける。</div><div class="hds-science-source">📖 出典: Duke University (2006)</div></div>
-  </div>
-  <div class="hds-science-card">
-    <div class="hds-science-num">2-3x</div>
-    <div class="hds-science-body"><div class="hds-science-title">実装意図で実行率が2〜3倍になる</div><div class="hds-science-desc">「いつ・どこで・どうやって」を事前に決めるだけで、行動の実行率が劇的に上がる。「運動する」より「月水金7時にジムへ行く」の方が圧倒的に継続できる。</div><div class="hds-science-source">📖 出典: Peter Gollwitzer, NYU</div></div>
-  </div>
-  <div class="hds-science-card">
-    <div class="hds-science-num">1%</div>
-    <div class="hds-science-body"><div class="hds-science-title">毎日1%の改善で1年後に37倍成長する</div><div class="hds-science-desc">1.01^365 = 37.78。逆に毎日1%悪化すると0.99^365 = 0.03（ほぼゼロ）になる。小さな改善の複利効果こそが、成功者と失敗者を分ける最大の要因。</div><div class="hds-science-source">📖 出典: James Clear『Atomic Habits』</div></div>
-  </div>
-  <div class="hds-science-card">
-    <div class="hds-science-num">5</div>
-    <div class="hds-science-body"><div class="hds-science-title">WHYを5回掘り下げると本当の動機に辿り着く</div><div class="hds-science-desc">表面的な「なぜ」を5回繰り返すと、感情と結びついた核心の動機が見えてくる。この深いWHYが、挫折しそうな時に自分を動かす最強の燃料になる。</div><div class="hds-science-source">📖 出典: トヨタ生産方式 × Simon Sinek 応用</div></div>
   </div>
 </div>
 
@@ -5196,7 +5009,7 @@ function addIncome() {
   closeModal('income-modal');
   document.getElementById('inc-amount').value = '';
   document.getElementById('inc-note').value = '';
-  renderMoneyPage();
+  renderBusinessPage();
   renderDashboardStats();
   showToast('💵 収入を記録しました！+15 XP');
 }
@@ -5204,7 +5017,7 @@ function addIncome() {
 function deleteIncome(id) {
   state.income = state.income.filter(e => e.id !== id);
   saveState();
-  renderMoneyPage();
+  renderBusinessPage();
   renderDashboardStats();
 }
 
@@ -5415,9 +5228,36 @@ function renderDashIncomePreview() {
   document.getElementById('dash-income-content').innerHTML = html;
 }
 
+// 習慣継続日数: 今日まで1つでも習慣を達成した日が何日連続か
+function getConsecutiveHabitDays() {
+  let count = 0;
+  const d = new Date();
+  // 今日から過去に遡る
+  for (let i = 0; i < 365; i++) {
+    const dateStr = localDateStr(d);
+    const habits = state.habits[dateStr] || {};
+    const done = Object.values(habits).some(h => h.done);
+    if (done) {
+      count++;
+      d.setDate(d.getDate() - 1);
+    } else if (i === 0) {
+      // 今日まだ何もやってない場合は昨日から数える
+      d.setDate(d.getDate() - 1);
+    } else {
+      break;
+    }
+  }
+  return count;
+}
+
 function renderHabitsFull() {
   const habits = getTodayHabits();
   document.getElementById('habits-date').textContent = todayLabel();
+
+  // 継続日数を更新
+  const consecDays = getConsecutiveHabitDays();
+  const consecEl = document.getElementById('habit-consec-days');
+  if (consecEl) consecEl.textContent = consecDays;
 
   const list = document.getElementById('habit-full-list');
   list.innerHTML = HABITS_CONFIG.map(h => {
@@ -5514,13 +5354,13 @@ function renderHeatmap() {
   document.getElementById('heatmap-container').innerHTML = html;
 }
 
-function renderMoneyPage() {
+function renderBusinessPage() {
   const monthly = getMonthlyTotal();
   const now = new Date();
   const month = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
   const monthlyEntries = state.income.filter(e => e.date.startsWith(month));
 
-  renderMarketMode();
+
   document.getElementById('monthly-total').textContent = `¥${monthly.toLocaleString()}`;
   document.getElementById('monthly-sub').textContent = `今月の記録: ${monthlyEntries.length}件`;
 
@@ -5549,6 +5389,12 @@ function renderMoneyPage() {
   renderSkills();
   renderIdeas();
   renderIncomeChart();
+}
+
+function renderInvestmentPage() {
+  renderMarketMode();
+  renderFxBiasGrid();
+  renderEcoCalendar();
 }
 
 function renderIncomeChart() {
@@ -5736,11 +5582,8 @@ function showPage(name, btn) {
 
   if (name === 'dashboard') { renderDashboard(); renderTodos(); }
   if (name === 'habits') renderHabitsFull();
-  if (name === 'money') renderMoneyPage();
-  if (name === 'vision') renderVisionPage();
-  if (name === 'achievements') { renderAchievements(); renderReport('week'); }
-  if (name === 'hints') renderHintsPage();
-  if (name === 'habitdesign') renderHabitDesignPage();
+  if (name === 'business') renderBusinessPage();
+  if (name === 'investment') renderInvestmentPage();
   if (name === 'lifelog') initLifeLog();
 }
 
