@@ -1224,6 +1224,14 @@ body{
         <label class="form-label">ライブURL（毎朝このURLに自動接続）</label>
         <input type="text" class="form-input" id="live-url-input" style="font-size:12px;" placeholder="https://www.youtube.com/@ryogakucho/live">
       </div>
+      <div class="form-group" style="margin-bottom:10px;">
+        <label class="form-label">Googleアカウント番号（YouTube Premiumのアカウント）</label>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="number" class="form-input" id="live-authuser-input" min="0" max="5" value="1" style="width:72px;font-size:14px;font-weight:700;">
+          <span style="font-size:11px;color:var(--text-dim);line-height:1.5;">0=1番目のアカウント<br>1=2番目（通常こちら）</span>
+        </div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:4px;">💡 Chromeのアカウント一覧で上から数えた順番（0始まり）。うまく開かない場合は番号を変えて試してください</div>
+      </div>
       <div class="form-group" style="margin-bottom:12px;">
         <label class="form-label">開始時刻</label>
         <input type="time" class="form-input" id="live-time-input" value="06:45">
@@ -5637,17 +5645,32 @@ const DEFAULT_LIVE_TIME = '06:45';
 let liveTimerInterval = null;
 let liveStandbyWin = null; // 事前に開いておく待機タブ
 
+// authuser 番号付きの YouTube URL を組み立てる
+function buildLiveUrl() {
+  const base = state.liveSettings?.url || DEFAULT_LIVE_URL;
+  const authuser = state.liveSettings?.authuser;
+  if (authuser !== undefined && authuser !== null && authuser !== '') {
+    // URLにすでに ? があるかチェック
+    const sep = base.includes('?') ? '&' : '?';
+    return `${base}${sep}authuser=${authuser}`;
+  }
+  return base;
+}
+
 function initLiveWidget() {
   if (!state.liveSettings) {
-    state.liveSettings = { url: DEFAULT_LIVE_URL, time: DEFAULT_LIVE_TIME, notifEnabled: false };
+    state.liveSettings = { url: DEFAULT_LIVE_URL, time: DEFAULT_LIVE_TIME, notifEnabled: false, authuser: 1 };
     saveState();
   }
   if (!state.liveSettings.url) state.liveSettings.url = DEFAULT_LIVE_URL;
+  if (state.liveSettings.authuser === undefined) state.liveSettings.authuser = 1;
 
   const urlInput = document.getElementById('live-url-input');
   const timeInput = document.getElementById('live-time-input');
+  const authuserInput = document.getElementById('live-authuser-input');
   if (urlInput) urlInput.value = state.liveSettings.url;
   if (timeInput) timeInput.value = state.liveSettings.time || DEFAULT_LIVE_TIME;
+  if (authuserInput) authuserInput.value = state.liveSettings.authuser;
   updateLiveTimeDisplay();
   updateNotifBtn();
   updateStandbyBtn();
@@ -5711,7 +5734,7 @@ function tickLiveTimer() {
 }
 
 function fireLiveAlarm() {
-  const url = state.liveSettings?.url || DEFAULT_LIVE_URL;
+  const url = buildLiveUrl();
 
   // 1. チャイム音を鳴らす
   playAlarmChime();
@@ -5769,7 +5792,7 @@ function playAlarmChime() {
 }
 
 function openYouTubeLive() {
-  const url = state.liveSettings?.url || DEFAULT_LIVE_URL;
+  const url = buildLiveUrl();
   window.open(url, '_blank');
 }
 
@@ -5831,9 +5854,12 @@ function toggleLiveSettings() {
 function saveLiveSettings() {
   const url  = document.getElementById('live-url-input')?.value.trim() || DEFAULT_LIVE_URL;
   const time = document.getElementById('live-time-input')?.value || DEFAULT_LIVE_TIME;
+  const authuserRaw = document.getElementById('live-authuser-input')?.value;
+  const authuser = authuserRaw !== '' && authuserRaw !== undefined ? parseInt(authuserRaw, 10) : '';
   if (!state.liveSettings) state.liveSettings = {};
-  state.liveSettings.url  = url;
-  state.liveSettings.time = time;
+  state.liveSettings.url      = url;
+  state.liveSettings.time     = time;
+  state.liveSettings.authuser = authuser;
   saveState();
   updateLiveTimeDisplay();
   const s = document.getElementById('live-settings-section');
