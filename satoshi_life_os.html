@@ -1042,6 +1042,7 @@ body{
 .kichi-tenshabi{background:#fee2e2;color:#991b1b;}
 .kichi-tora{background:#dbeafe;color:#1e40af;}
 .kichi-mi{background:#dcfce7;color:#15803d;}
+.birthday-chip{font-size:7px;font-weight:700;border-radius:2px;padding:1px 3px;line-height:1.3;white-space:nowrap;max-width:100%;text-align:center;background:#fce7f3;color:#be185d;display:block;margin-top:1px;}
 
 /* ─── Exercise Detail Modal ─── */
 .ex-modal-overlay{
@@ -4688,6 +4689,25 @@ function getKichijitsu(dateStr) {
   return out;
 }
 
+// ── 誕生日データ ──
+const BIRTHDAYS = [
+  { name:'さとし', year:1982, month:1,  day:4  },
+  { name:'まりあ', year:1994, month:8,  day:30 },
+  { name:'陽菜',   year:2014, month:1,  day:21 },
+  { name:'あらん', year:2016, month:9,  day:21 },
+  { name:'りあん', year:2019, month:8,  day:29 },
+  { name:'父',     year:1946, month:6,  day:11 },
+  { name:'母',     year:1949, month:4,  day:24 },
+];
+
+// 指定日の誕生日リストを返す（名前・年齢）
+function getBirthdaysForDate(dateStr) {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return BIRTHDAYS
+    .filter(b => b.month === m && b.day === d)
+    .map(b => ({ name: b.name, age: y - b.year }));
+}
+
 function renderLogCalendar() {
   const container = document.getElementById('log-calendar-grid');
   if (!container) return;
@@ -4733,6 +4753,13 @@ function renderLogCalendar() {
 
     html += `<div class="log-cal-day ${isToday ? 'today' : ''}" onclick="showLogDayDetail('${dateStr}')">`;
     html += `<div class="log-cal-daynum">${d}</div>`;
+    // 誕生日バッジ
+    const bdays = getBirthdaysForDate(dateStr);
+    if (bdays.length > 0) {
+      bdays.forEach(b => {
+        html += `<span class="birthday-chip">🎂${b.name}${b.age}歳</span>`;
+      });
+    }
     // 吉日バッジ
     const kichi = getKichijitsu(dateStr);
     if (kichi.length > 0) {
@@ -4777,8 +4804,13 @@ function showLogDayDetail(dateStr) {
   const sleepH  = sleep ? calcSleepHours(sleep.sleepTime, sleep.wakeTime) : null;
   const [y,mo,d] = dateStr.split('-');
 
+  const detailBdays = getBirthdaysForDate(dateStr);
   cont.innerHTML = `
     <div style="font-size:14px;font-weight:700;color:var(--primary);margin-bottom:12px;">📋 ${parseInt(y)}年${parseInt(mo)}月${parseInt(d)}日の記録</div>
+    ${detailBdays.length > 0 ? `<div style="background:#fce7f3;border-radius:10px;padding:10px;margin-bottom:12px;text-align:center;">
+      <div style="font-size:11px;color:#9d174d;font-weight:700;margin-bottom:4px;">🎂 誕生日</div>
+      ${detailBdays.map(b=>`<div style="font-size:16px;font-weight:800;color:#be185d;">${b.name} ${b.age}歳🎉</div>`).join('')}
+    </div>` : ''}
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
       <div style="background:var(--card2);border-radius:10px;padding:10px;text-align:center;">
         <div style="font-size:10px;color:var(--text-dim);">⚖️ 体重</div>
